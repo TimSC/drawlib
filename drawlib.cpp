@@ -11,7 +11,32 @@ LocalStore::~LocalStore()
 
 }
 
-void LocalStore::test()
+void LocalStore::ClearDrawingBuffer()
+{
+
+}
+
+void LocalStore::SetColour(double red, double green, double blue)
+{
+
+}
+
+void LocalStore::SetAlpha(double alpha)
+{
+
+}
+
+void LocalStore::SetLineWidth(double lineWidth)
+{
+
+}
+
+void LocalStore::AddLines(const Contours &lines)
+{
+
+}
+
+void LocalStore::AddPolygons(const std::vector<Polygon> &polygons)
 {
 
 }
