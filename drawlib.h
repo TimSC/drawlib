@@ -1,7 +1,6 @@
 #ifndef _DRAWLIB_H
 #define _DRAWLIB_H
 
-#include <cairo/cairo.h>
 #include <vector>
 #include <utility>
 
@@ -10,6 +9,7 @@ typedef std::vector<Point> Contour;
 typedef std::vector<Contour> Contours;
 typedef std::pair<Contour, Contours> Polygon;
 
+///Enumeration of allowed command types
 enum CmdTypes
 {
 	CMD_BASE,
@@ -17,65 +17,70 @@ enum CmdTypes
 	CMD_LINES
 };
 
+///Drawing properties of shapes that are filled
 class ShapeProperties
 {
 public:
 	double r, g, b;
 
-	ShapeProperties() {r=255.0; g=255.0; b=255.0;}
-	ShapeProperties(double r, double g, double b): r(r), g(g), b(b) {}
-	ShapeProperties(const ShapeProperties &arg) {r=arg.r; g=arg.g; b=arg.b;}
-	virtual ~ShapeProperties() {};
+	ShapeProperties();
+	ShapeProperties(double r, double g, double b);
+	ShapeProperties(const ShapeProperties &arg);
+	virtual ~ShapeProperties();
 };
 
+///Drawing properties of lines/strokes
 class LineProperties
 {
 public:
 	double r, g, b;
 	double lineWidth;
+	bool closedLoop;
 
-	LineProperties() {r=255.0; g=255.0; b=255.0; lineWidth=1.0;}
-	LineProperties(double r, double g, double b, double lineWidth=1.0): r(r), g(g), b(b), lineWidth(lineWidth) {}
-	LineProperties(const LineProperties &arg) {r=arg.r; g=arg.g; b=arg.b; lineWidth=arg.lineWidth;}
-	virtual ~LineProperties() {};
+	LineProperties();
+	LineProperties(double r, double g, double b, double lineWidth=1.0);
+	LineProperties(const LineProperties &arg);
+	virtual ~LineProperties();
 };
 
+///Base class of all command classes
 class BaseCmd
 {
 public:
 	const CmdTypes type;
-	BaseCmd(CmdTypes type = CMD_BASE): type(type) {};
-	BaseCmd(const BaseCmd &arg): type(arg.type) {};
-	virtual ~BaseCmd() {};
-	virtual BaseCmd *Clone() {return new class BaseCmd(*this);};
+	BaseCmd(CmdTypes type = CMD_BASE);
+	BaseCmd(const BaseCmd &arg);
+	virtual ~BaseCmd();
+	virtual BaseCmd *Clone();
 };
 
+///Draw polygons command
 class DrawPolygonsCmd : public BaseCmd
 {
 public:
 	const std::vector<Polygon> polygons;
 	const class ShapeProperties properties;
 
-	DrawPolygonsCmd(const std::vector<Polygon> &polygons, const class ShapeProperties &properties) : 
-		BaseCmd(CMD_POLYGONS), polygons(polygons), properties(properties) {};
-	DrawPolygonsCmd(const DrawPolygonsCmd &arg) : BaseCmd(CMD_POLYGONS), polygons(arg.polygons), properties(arg.properties) {};
-	virtual ~DrawPolygonsCmd() {};
-	virtual BaseCmd *Clone() {return new class DrawPolygonsCmd(*this);};
+	DrawPolygonsCmd(const std::vector<Polygon> &polygons, const class ShapeProperties &properties);
+	DrawPolygonsCmd(const DrawPolygonsCmd &arg);
+	virtual ~DrawPolygonsCmd();
+	virtual BaseCmd *Clone();
 };
 
+///Draw lines command
 class DrawLinesCmd : public BaseCmd
 {
 public:
 	const Contours lines;
 	const class LineProperties properties;
 
-	DrawLinesCmd(const Contours &lines, const class LineProperties &properties) : BaseCmd(CMD_LINES), 
-		lines(lines), properties(properties) {};
-	DrawLinesCmd(const DrawLinesCmd &arg) : BaseCmd(CMD_LINES), lines(arg.lines), properties(arg.properties) {};
-	virtual ~DrawLinesCmd() {};
-	virtual BaseCmd *Clone() {return new class DrawLinesCmd(*this);};
+	DrawLinesCmd(const Contours &lines, const class LineProperties &properties);
+	DrawLinesCmd(const DrawLinesCmd &arg);
+	virtual ~DrawLinesCmd();
+	virtual BaseCmd *Clone();
 };
 
+///Abstract base class of drawing library
 class IDrawLib
 {
 public:
@@ -84,11 +89,13 @@ public:
 
 	virtual void ClearDrawingCmds() = 0;
 	virtual void AddCmd(class BaseCmd *cmd) = 0;
-
+	virtual void AddDrawPolygonsCmd(const std::vector<Polygon> &polygons, const class ShapeProperties &properties) = 0;
+	virtual void AddDrawLinesCmd(const Contours &lines, const class LineProperties &properties) = 0;
 
 	virtual void Draw() {};
 };
 
+///Store all drawing commands in a memory buffer
 class LocalStore : public IDrawLib
 {
 protected:
@@ -99,23 +106,8 @@ public:
 
 	void ClearDrawingCmds();
 	void AddCmd(class BaseCmd *cmd);
-};
-
-class DrawLibCairo : public LocalStore
-{
-protected:
-	cairo_t *cr;
-	cairo_surface_t *surface;
-
-	void DrawCmdPolygons(class DrawPolygonsCmd &polygons);
-	void DrawCmdLines(class DrawLinesCmd &linesCmd);
-public:
-	DrawLibCairo(cairo_surface_t *surface);
-	virtual ~DrawLibCairo();
-	void test();
-
-	void Draw();
-	
+	void AddDrawPolygonsCmd(const std::vector<Polygon> &polygons, const class ShapeProperties &properties);
+	void AddDrawLinesCmd(const Contours &lines, const class LineProperties &properties);
 };
 
 #endif //_DRAWLIB_H

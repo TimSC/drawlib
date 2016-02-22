@@ -3,6 +3,41 @@
 #include "drawlib.h"
 using namespace std;
 
+ShapeProperties::ShapeProperties() {r=255.0; g=255.0; b=255.0;}
+ShapeProperties::ShapeProperties(double r, double g, double b): r(r), g(g), b(b) {}
+ShapeProperties::ShapeProperties(const ShapeProperties &arg) {r=arg.r; g=arg.g; b=arg.b;}
+ShapeProperties::~ShapeProperties() {}
+
+LineProperties::LineProperties() {r=255.0; g=255.0; b=255.0; lineWidth=1.0; closedLoop = false;}
+LineProperties::LineProperties(double r, double g, double b, double lineWidth): r(r), g(g), b(b), lineWidth(lineWidth) {closedLoop=false;}
+LineProperties::LineProperties(const LineProperties &arg) 
+{
+	r=arg.r; g=arg.g; b=arg.b; lineWidth=arg.lineWidth; closedLoop=arg.closedLoop;
+}
+LineProperties::~LineProperties() {}
+
+BaseCmd::BaseCmd(CmdTypes type): type(type) {}
+BaseCmd::BaseCmd(const BaseCmd &arg): type(arg.type) {}
+BaseCmd::~BaseCmd() {}
+BaseCmd *BaseCmd::Clone() {return new class BaseCmd(*this);}
+
+DrawPolygonsCmd::DrawPolygonsCmd(const std::vector<Polygon> &polygons, const class ShapeProperties &properties) : 
+	BaseCmd(CMD_POLYGONS), polygons(polygons), properties(properties) {}
+DrawPolygonsCmd::DrawPolygonsCmd(const DrawPolygonsCmd &arg) : BaseCmd(CMD_POLYGONS), polygons(arg.polygons), properties(arg.properties) 
+{
+
+}
+DrawPolygonsCmd::~DrawPolygonsCmd() {}
+BaseCmd *DrawPolygonsCmd::Clone() {return new class DrawPolygonsCmd(*this);}
+
+DrawLinesCmd::DrawLinesCmd(const Contours &lines, const class LineProperties &properties) : BaseCmd(CMD_LINES), 
+	lines(lines), properties(properties) {}
+DrawLinesCmd::DrawLinesCmd(const DrawLinesCmd &arg) : BaseCmd(CMD_LINES), lines(arg.lines), properties(arg.properties) {}
+DrawLinesCmd::~DrawLinesCmd() {}
+BaseCmd *DrawLinesCmd::Clone() {return new class DrawLinesCmd(*this);}
+
+// *************************************
+
 LocalStore::LocalStore() : IDrawLib()
 {
 
@@ -26,85 +61,16 @@ void LocalStore::AddCmd(class BaseCmd *cmd)
 	cmds.push_back(cmd->Clone());
 }
 
-// **********************************
-
-DrawLibCairo::DrawLibCairo(cairo_surface_t *surface): LocalStore(),
-	surface(surface)
+void LocalStore::AddDrawPolygonsCmd(const std::vector<Polygon> &polygons, const class ShapeProperties &properties)
 {
-	cr = cairo_create(surface);
+	class DrawPolygonsCmd cmd(polygons, properties);
+	this->AddCmd(&cmd);
 }
 
-DrawLibCairo::~DrawLibCairo()
+void LocalStore::AddDrawLinesCmd(const Contours &lines, const class LineProperties &properties)
 {
-	cairo_destroy(cr);
+	class DrawLinesCmd cmd(lines, properties);
+	this->AddCmd(&cmd);
 }
 
-void DrawLibCairo::test()
-{
-	cairo_set_source_rgb(cr, 255, 0, 0);
-	cairo_select_font_face(cr, "Sans", CAIRO_FONT_SLANT_NORMAL,
-		CAIRO_FONT_WEIGHT_NORMAL);
-	cairo_set_font_size(cr, 30.0);
-
-	cairo_move_to(cr, 20.0, 60.0);
-	cairo_show_text(cr, "Foobar.");
-}
-
-void DrawLibCairo::Draw()
-{
-	for(size_t i=0;i < cmds.size(); i++) {
-		class BaseCmd *baseCmd = cmds[i];
-		switch(baseCmd->type)
-		{
-		case CMD_POLYGONS:
-			DrawCmdPolygons(*(class DrawPolygonsCmd *)baseCmd);
-			break;
-		case CMD_LINES:
-			DrawCmdLines(*(class DrawLinesCmd *)baseCmd);
-			break;
-		}
-
-	}
-}
-
-void DrawLibCairo::DrawCmdPolygons(class DrawPolygonsCmd &polygonsCmd)
-{
-	const class ShapeProperties &properties = polygonsCmd.properties;
-	cairo_set_source_rgb(cr, properties.r, properties.g, properties.b);
-
-	const std::vector<Polygon> &polygons = polygonsCmd.polygons;
-	for(size_t i=0;i < polygons.size();i++)
-	{
-		const Polygon &polygon = polygons[i];
-		const Contour &outer = polygon.first;
-		if(outer.size() > 0)
-			cairo_move_to(cr, outer[0].first, outer[0].second);
-		for(size_t pt=1;pt < outer.size();pt++)
-		{
-			cairo_line_to(cr, outer[pt].first, outer[pt].second);
-		}
-		cairo_fill (cr);
-	}
-}
-
-void DrawLibCairo::DrawCmdLines(class DrawLinesCmd &linesCmd)
-{
-	const class LineProperties &properties = linesCmd.properties;
-	cairo_set_source_rgb(cr, properties.r, properties.g, properties.b);
-	cairo_set_line_width (cr, properties.lineWidth);
-
-	const Contours &lines = linesCmd.lines;
-	for(size_t i=0;i < lines.size();i++)
-	{
-		const Contour &contour = lines[i];
-		if(contour.size() > 0)
-			cairo_move_to(cr, contour[0].first, contour[0].second);
-		for(size_t pt=1;pt < contour.size();pt++)
-		{
-			cairo_line_to(cr, contour[pt].first, contour[pt].second);
-		}
-		cairo_stroke (cr);
-	}
-
-}
 
