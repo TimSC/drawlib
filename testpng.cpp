@@ -8,7 +8,36 @@ int main(void)
 	surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, 320, 240);
 
 	class DrawLibCairo drawlib(surface);
-	drawlib.test();
+	
+	Contour outer;
+	outer.push_back(Point(50, 50));
+	outer.push_back(Point(150, 50));
+	outer.push_back(Point(150, 150));
+	outer.push_back(Point(50, 150));
+	Contours inners;
+	Polygon polygon(outer, inners);
+
+	Contour outer2;
+	outer2.push_back(Point(51, 51));
+	outer2.push_back(Point(149, 51));
+	outer2.push_back(Point(149, 149));
+	outer2.push_back(Point(51, 149));
+	Contours inners2;
+	Polygon polygon2(outer2, inners2);
+
+	std::vector<Polygon> polygons;
+	polygons.push_back(polygon);
+	class ShapeProperties prop(1.0, 0.0, 0.0);
+	class DrawPolygonsCmd cmd(polygons, prop);
+	drawlib.AddCmd(&cmd);
+
+	std::vector<Polygon> polygons2;
+	polygons2.push_back(polygon2);
+	class ShapeProperties prop2(0.5, 0.0, 0.0);
+	class DrawPolygonsCmd cmd2(polygons2, prop2);
+	drawlib.AddCmd(&cmd2);
+
+	drawlib.Draw();
 
 	cairo_surface_write_to_png(surface, "image.png");	
 	cairo_surface_destroy(surface);

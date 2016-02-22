@@ -1,5 +1,7 @@
-
+#include <stdlib.h>
+#include <iostream>
 #include "drawlib.h"
+using namespace std;
 
 LocalStore::LocalStore() : IDrawLib()
 {
@@ -8,37 +10,20 @@ LocalStore::LocalStore() : IDrawLib()
 
 LocalStore::~LocalStore()
 {
-
+	ClearDrawingCmds();
 }
 
-void LocalStore::ClearDrawingBuffer()
+void LocalStore::ClearDrawingCmds()
 {
-
+	for(size_t i=0;i < cmds.size(); i++)
+		delete cmds[i];
+	cmds.clear();
 }
 
-void LocalStore::SetColour(double red, double green, double blue)
+
+void LocalStore::AddCmd(class BaseCmd *cmd)
 {
-
-}
-
-void LocalStore::SetAlpha(double alpha)
-{
-
-}
-
-void LocalStore::SetLineWidth(double lineWidth)
-{
-
-}
-
-void LocalStore::AddLines(const Contours &lines)
-{
-
-}
-
-void LocalStore::AddPolygons(const std::vector<Polygon> &polygons)
-{
-
+	cmds.push_back(cmd->Clone());
 }
 
 // **********************************
@@ -63,5 +48,41 @@ void DrawLibCairo::test()
 
 	cairo_move_to(cr, 20.0, 60.0);
 	cairo_show_text(cr, "Foobar.");
+}
+
+void DrawLibCairo::Draw()
+{
+	for(size_t i=0;i < cmds.size(); i++) {
+		class BaseCmd *baseCmd = cmds[i];
+		switch(baseCmd->type)
+		{
+		case CMD_POLYGONS:
+			DrawCmdPolygons(*(class DrawPolygonsCmd *)baseCmd);
+			break;
+		case CMD_LINES:
+			break;
+		}
+
+	}
+}
+
+void DrawLibCairo::DrawCmdPolygons(class DrawPolygonsCmd &polygonsCmd)
+{
+	const class ShapeProperties &properties = polygonsCmd.properties;
+	cairo_set_source_rgb(cr, properties.r, properties.g, properties.b);
+
+	const std::vector<Polygon> &polygons = polygonsCmd.polygons;
+	for(size_t i=0;i < polygons.size();i++)
+	{
+		const Polygon &polygon = polygons[i];
+		const Contour &outer = polygon.first;
+		if(outer.size() > 0)
+			cairo_move_to(cr, outer[0].first, outer[0].second);
+		for(size_t pt=1;pt < outer.size();pt++)
+		{
+			cairo_line_to(cr, outer[pt].first, outer[pt].second);
+		}
+		cairo_fill (cr);
+	}
 }
 
