@@ -37,6 +37,16 @@ int main(void)
 	class DrawPolygonsCmd cmd2(polygons2, prop2);
 	drawlib.AddCmd(&cmd2);
 
+	Contour line1;
+	line1.push_back(Point(100, 100));
+	line1.push_back(Point(160, 110));
+	line1.push_back(Point(200, 170));
+	class LineProperties lineProp1(0.0, 0.9, 0.0, 3.0);
+	Contours lines1;
+	lines1.push_back(line1);
+	class DrawLinesCmd cmd3(lines1, lineProp1);
+	drawlib.AddCmd(&cmd3);
+
 	drawlib.Draw();
 
 	cairo_surface_write_to_png(surface, "image.png");	

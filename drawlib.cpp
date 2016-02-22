@@ -60,6 +60,7 @@ void DrawLibCairo::Draw()
 			DrawCmdPolygons(*(class DrawPolygonsCmd *)baseCmd);
 			break;
 		case CMD_LINES:
+			DrawCmdLines(*(class DrawLinesCmd *)baseCmd);
 			break;
 		}
 
@@ -84,5 +85,26 @@ void DrawLibCairo::DrawCmdPolygons(class DrawPolygonsCmd &polygonsCmd)
 		}
 		cairo_fill (cr);
 	}
+}
+
+void DrawLibCairo::DrawCmdLines(class DrawLinesCmd &linesCmd)
+{
+	const class LineProperties &properties = linesCmd.properties;
+	cairo_set_source_rgb(cr, properties.r, properties.g, properties.b);
+	cairo_set_line_width (cr, properties.lineWidth);
+
+	const Contours &lines = linesCmd.lines;
+	for(size_t i=0;i < lines.size();i++)
+	{
+		const Contour &contour = lines[i];
+		if(contour.size() > 0)
+			cairo_move_to(cr, contour[0].first, contour[0].second);
+		for(size_t pt=1;pt < contour.size();pt++)
+		{
+			cairo_line_to(cr, contour[pt].first, contour[pt].second);
+		}
+		cairo_stroke (cr);
+	}
+
 }
 

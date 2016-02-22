@@ -28,6 +28,18 @@ public:
 	virtual ~ShapeProperties() {};
 };
 
+class LineProperties
+{
+public:
+	double r, g, b;
+	double lineWidth;
+
+	LineProperties() {r=255.0; g=255.0; b=255.0; lineWidth=1.0;}
+	LineProperties(double r, double g, double b, double lineWidth=1.0): r(r), g(g), b(b), lineWidth(lineWidth) {}
+	LineProperties(const LineProperties &arg) {r=arg.r; g=arg.g; b=arg.b; lineWidth=arg.lineWidth;}
+	virtual ~LineProperties() {};
+};
+
 class BaseCmd
 {
 public:
@@ -55,9 +67,11 @@ class DrawLinesCmd : public BaseCmd
 {
 public:
 	const Contours lines;
+	const class LineProperties properties;
 
-	DrawLinesCmd(const Contours &lines) : BaseCmd(CMD_LINES), lines(lines) {};
-	DrawLinesCmd(const DrawLinesCmd &arg) : BaseCmd(CMD_LINES), lines(arg.lines) {};
+	DrawLinesCmd(const Contours &lines, const class LineProperties &properties) : BaseCmd(CMD_LINES), 
+		lines(lines), properties(properties) {};
+	DrawLinesCmd(const DrawLinesCmd &arg) : BaseCmd(CMD_LINES), lines(arg.lines), properties(arg.properties) {};
 	virtual ~DrawLinesCmd() {};
 	virtual BaseCmd *Clone() {return new class DrawLinesCmd(*this);};
 };
@@ -94,6 +108,7 @@ protected:
 	cairo_surface_t *surface;
 
 	void DrawCmdPolygons(class DrawPolygonsCmd &polygons);
+	void DrawCmdLines(class DrawLinesCmd &linesCmd);
 public:
 	DrawLibCairo(cairo_surface_t *surface);
 	virtual ~DrawLibCairo();
