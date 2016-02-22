@@ -1,5 +1,5 @@
 
 all: testpng
-testpng: testpng.cpp
-	g++ testpng.cpp -lcairo -o testpng
+testpng: testpng.cpp drawlib.cpp
+	g++ testpng.cpp drawlib.cpp -lcairo -o testpng
 
