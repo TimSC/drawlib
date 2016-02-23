@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <utility>
+#include <string>
 
 typedef std::pair<double, double> Point;
 typedef std::vector<Point> Contour;
@@ -14,7 +15,8 @@ enum CmdTypes
 {
 	CMD_BASE,
 	CMD_POLYGONS,
-	CMD_LINES
+	CMD_LINES,
+	CMD_TEXT,
 };
 
 ///Drawing properties of shapes that are filled
@@ -41,6 +43,19 @@ public:
 	LineProperties(double r, double g, double b, double lineWidth=1.0);
 	LineProperties(const LineProperties &arg);
 	virtual ~LineProperties();
+};
+
+///Drawing properties of lines/strokes
+class TextProperties
+{
+public:
+	double r, g, b;
+	std::string font;
+
+	TextProperties();
+	TextProperties(double r, double g, double b);
+	TextProperties(const TextProperties &arg);
+	virtual ~TextProperties();
 };
 
 ///Base class of all command classes
@@ -80,6 +95,19 @@ public:
 	virtual BaseCmd *Clone();
 };
 
+///Draw text command
+class DrawTextCmd : public BaseCmd
+{
+public:
+	const std::vector<std::string> textStrs;
+	const class TextProperties properties;
+
+	DrawTextCmd(const std::vector<std::string> &textStrs, const class TextProperties &properties);
+	DrawTextCmd(const DrawTextCmd &arg);
+	virtual ~DrawTextCmd();
+	virtual BaseCmd *Clone();
+};
+
 ///Abstract base class of drawing library
 class IDrawLib
 {
@@ -91,6 +119,7 @@ public:
 	virtual void AddCmd(class BaseCmd *cmd) = 0;
 	virtual void AddDrawPolygonsCmd(const std::vector<Polygon> &polygons, const class ShapeProperties &properties) = 0;
 	virtual void AddDrawLinesCmd(const Contours &lines, const class LineProperties &properties) = 0;
+	virtual void AddDrawTextCmd(const std::vector<std::string> &textStrs, const class TextProperties &properties) = 0;
 
 	virtual void Draw() {};
 };
@@ -108,6 +137,7 @@ public:
 	void AddCmd(class BaseCmd *cmd);
 	void AddDrawPolygonsCmd(const std::vector<Polygon> &polygons, const class ShapeProperties &properties);
 	void AddDrawLinesCmd(const Contours &lines, const class LineProperties &properties);
+	void AddDrawTextCmd(const std::vector<std::string> &textStrs, const class TextProperties &properties);
 };
 
 #endif //_DRAWLIB_H

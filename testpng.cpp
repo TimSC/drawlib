@@ -46,6 +46,11 @@ int main(void)
 	lines1.push_back(line1);
 	drawlib.AddDrawLinesCmd(lines1, lineProp1);
 
+	std::vector<std::string> textStrs;
+	textStrs.push_back("spam");
+	class TextProperties properties;
+	drawlib.AddDrawTextCmd(textStrs, properties);
+
 	drawlib.Draw();
 
 	cairo_surface_write_to_png(surface, "image.png");	

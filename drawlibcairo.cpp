@@ -35,6 +35,9 @@ void DrawLibCairo::Draw()
 		case CMD_LINES:
 			DrawCmdLines(*(class DrawLinesCmd *)baseCmd);
 			break;
+		case CMD_TEXT:
+			DrawCmdText(*(class DrawTextCmd *)baseCmd);
+			break;
 		}
 
 	}
@@ -42,6 +45,7 @@ void DrawLibCairo::Draw()
 
 void DrawLibCairo::DrawCmdPolygons(class DrawPolygonsCmd &polygonsCmd)
 {
+	cairo_save (this->cr);
 	const class ShapeProperties &properties = polygonsCmd.properties;
 	cairo_set_source_rgb(cr, properties.r, properties.g, properties.b);
 
@@ -58,10 +62,12 @@ void DrawLibCairo::DrawCmdPolygons(class DrawPolygonsCmd &polygonsCmd)
 		}
 		cairo_fill (cr);
 	}
+	cairo_restore(this->cr);
 }
 
 void DrawLibCairo::DrawCmdLines(class DrawLinesCmd &linesCmd)
 {
+	cairo_save (this->cr);
 	const class LineProperties &properties = linesCmd.properties;
 	cairo_set_source_rgb(cr, properties.r, properties.g, properties.b);
 	cairo_set_line_width (cr, properties.lineWidth);
@@ -81,6 +87,25 @@ void DrawLibCairo::DrawCmdLines(class DrawLinesCmd &linesCmd)
 
 		cairo_stroke (cr);
 	}
+	cairo_restore(this->cr);
+}
 
+void DrawLibCairo::DrawCmdText(class DrawTextCmd &textCmd)
+{
+	cairo_save (this->cr);
+	const class TextProperties &properties = textCmd.properties;
+	cairo_set_source_rgb(cr, properties.r, properties.g, properties.b);
+
+	const std::vector<std::string> &text = textCmd.textStrs;
+	for(size_t i=0;i < text.size();i++)
+	{
+		cairo_select_font_face(cr, "Sans", CAIRO_FONT_SLANT_NORMAL,
+			CAIRO_FONT_WEIGHT_NORMAL);
+		cairo_set_font_size(cr, 30.0);
+
+		cairo_move_to(cr, 20.0, 60.0);
+		cairo_show_text(cr, text[i].c_str());
+	}
+	cairo_restore(this->cr);
 }
 

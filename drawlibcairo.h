@@ -13,6 +13,7 @@ protected:
 
 	void DrawCmdPolygons(class DrawPolygonsCmd &polygons);
 	void DrawCmdLines(class DrawLinesCmd &linesCmd);
+	void DrawCmdText(class DrawTextCmd &textCmd);
 public:
 	DrawLibCairo(cairo_surface_t *surface);
 	virtual ~DrawLibCairo();
