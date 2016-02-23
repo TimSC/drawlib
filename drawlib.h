@@ -45,17 +45,32 @@ public:
 	virtual ~LineProperties();
 };
 
-///Drawing properties of lines/strokes
+///Drawing properties of text drawing
 class TextProperties
 {
 public:
 	double r, g, b;
 	std::string font;
+	double fontSize;
 
 	TextProperties();
 	TextProperties(double r, double g, double b);
 	TextProperties(const TextProperties &arg);
 	virtual ~TextProperties();
+};
+
+//Defines a single label and positioning
+class TextLabel
+{
+public:
+	std::string text;
+	double x, y;
+
+	TextLabel();
+	TextLabel(std::string &text, double x, double y);
+	TextLabel(const char *text, double x, double y);
+	TextLabel(const TextLabel &arg);
+	virtual ~TextLabel();
 };
 
 ///Base class of all command classes
@@ -99,10 +114,10 @@ public:
 class DrawTextCmd : public BaseCmd
 {
 public:
-	const std::vector<std::string> textStrs;
+	const std::vector<class TextLabel> textStrs;
 	const class TextProperties properties;
 
-	DrawTextCmd(const std::vector<std::string> &textStrs, const class TextProperties &properties);
+	DrawTextCmd(const std::vector<class TextLabel> &textStrs, const class TextProperties &properties);
 	DrawTextCmd(const DrawTextCmd &arg);
 	virtual ~DrawTextCmd();
 	virtual BaseCmd *Clone();
@@ -119,7 +134,7 @@ public:
 	virtual void AddCmd(class BaseCmd *cmd) = 0;
 	virtual void AddDrawPolygonsCmd(const std::vector<Polygon> &polygons, const class ShapeProperties &properties) = 0;
 	virtual void AddDrawLinesCmd(const Contours &lines, const class LineProperties &properties) = 0;
-	virtual void AddDrawTextCmd(const std::vector<std::string> &textStrs, const class TextProperties &properties) = 0;
+	virtual void AddDrawTextCmd(const std::vector<class TextLabel> &textStrs, const class TextProperties &properties) = 0;
 
 	virtual void Draw() {};
 };
@@ -137,7 +152,7 @@ public:
 	void AddCmd(class BaseCmd *cmd);
 	void AddDrawPolygonsCmd(const std::vector<Polygon> &polygons, const class ShapeProperties &properties);
 	void AddDrawLinesCmd(const Contours &lines, const class LineProperties &properties);
-	void AddDrawTextCmd(const std::vector<std::string> &textStrs, const class TextProperties &properties);
+	void AddDrawTextCmd(const std::vector<class TextLabel> &textStrs, const class TextProperties &properties);
 };
 
 #endif //_DRAWLIB_H

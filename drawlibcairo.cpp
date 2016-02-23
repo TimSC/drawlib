@@ -12,17 +12,6 @@ DrawLibCairo::~DrawLibCairo()
 	cairo_destroy(this->cr);
 }
 
-void DrawLibCairo::test()
-{
-	cairo_set_source_rgb(cr, 255, 0, 0);
-	cairo_select_font_face(cr, "Sans", CAIRO_FONT_SLANT_NORMAL,
-		CAIRO_FONT_WEIGHT_NORMAL);
-	cairo_set_font_size(cr, 30.0);
-
-	cairo_move_to(cr, 20.0, 60.0);
-	cairo_show_text(cr, "Foobar.");
-}
-
 void DrawLibCairo::Draw()
 {
 	for(size_t i=0;i < cmds.size(); i++) {
@@ -95,16 +84,15 @@ void DrawLibCairo::DrawCmdText(class DrawTextCmd &textCmd)
 	cairo_save (this->cr);
 	const class TextProperties &properties = textCmd.properties;
 	cairo_set_source_rgb(cr, properties.r, properties.g, properties.b);
+	cairo_set_font_size(cr, properties.fontSize);
+	cairo_select_font_face(cr, properties.font.c_str(), CAIRO_FONT_SLANT_NORMAL,
+		CAIRO_FONT_WEIGHT_NORMAL);
 
-	const std::vector<std::string> &text = textCmd.textStrs;
-	for(size_t i=0;i < text.size();i++)
+	const std::vector<class TextLabel> &textStrs = textCmd.textStrs;
+	for(size_t i=0;i < textStrs.size();i++)
 	{
-		cairo_select_font_face(cr, "Sans", CAIRO_FONT_SLANT_NORMAL,
-			CAIRO_FONT_WEIGHT_NORMAL);
-		cairo_set_font_size(cr, 30.0);
-
-		cairo_move_to(cr, 20.0, 60.0);
-		cairo_show_text(cr, text[i].c_str());
+		cairo_move_to(cr, textStrs[i].x, textStrs[i].y);
+		cairo_show_text(cr, textStrs[i].text.c_str());
 	}
 	cairo_restore(this->cr);
 }

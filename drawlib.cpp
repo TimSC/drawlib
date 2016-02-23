@@ -30,16 +30,37 @@ LineProperties::~LineProperties()
 {}
 
 TextProperties::TextProperties()
-{r=1.0; g=1.0; b=1.0;}
+{r=1.0; g=1.0; b=1.0; fontSize=10.0; font="Sans";}
 
-TextProperties::TextProperties(double r, double g, double b)
+TextProperties::TextProperties(double r, double g, double b): r(r), g(g), b(b),
+	fontSize(10.0), font("Sans")
 {}
 
 TextProperties::TextProperties(const TextProperties &arg)
-{r=arg.r; g=arg.g; b=arg.b;}
+{r=arg.r; g=arg.g; b=arg.b; fontSize=arg.fontSize; font=arg.font;}
 
 TextProperties::~TextProperties()
 {}
+
+// *************************************
+
+TextLabel::TextLabel() : x(0.0), y(0.0)
+{}
+
+TextLabel::TextLabel(std::string &text, double x, double y): text(text), x(x), y(y)
+{}
+
+TextLabel::TextLabel(const char *text, double x, double y): text(text), x(x), y(y)
+{}
+
+TextLabel::TextLabel(const TextLabel &arg):
+	x(arg.x), y(arg.y), text(arg.text)
+{}
+
+TextLabel::~TextLabel()
+{}
+
+// *************************************
 
 BaseCmd::BaseCmd(CmdTypes type): type(type)
 {}
@@ -79,7 +100,7 @@ DrawLinesCmd::~DrawLinesCmd()
 BaseCmd *DrawLinesCmd::Clone()
 {return new class DrawLinesCmd(*this);}
 
-DrawTextCmd::DrawTextCmd(const std::vector<std::string> &textStrs, const class TextProperties &properties) : BaseCmd(CMD_TEXT), 
+DrawTextCmd::DrawTextCmd(const std::vector<class TextLabel> &textStrs, const class TextProperties &properties) : BaseCmd(CMD_TEXT), 
 	textStrs(textStrs), properties(properties) 
 {}
 
@@ -129,7 +150,7 @@ void LocalStore::AddDrawLinesCmd(const Contours &lines, const class LineProperti
 	this->AddCmd(&cmd);
 }
 
-void LocalStore::AddDrawTextCmd(const std::vector<std::string> &textStrs, const class TextProperties &properties)
+void LocalStore::AddDrawTextCmd(const std::vector<class TextLabel> &textStrs, const class TextProperties &properties)
 {
 	class DrawTextCmd cmd(textStrs, properties);
 	this->AddCmd(&cmd);

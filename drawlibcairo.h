@@ -17,7 +17,6 @@ protected:
 public:
 	DrawLibCairo(cairo_surface_t *surface);
 	virtual ~DrawLibCairo();
-	void test();
 
 	void Draw();
 	

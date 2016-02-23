@@ -46,9 +46,11 @@ int main(void)
 	lines1.push_back(line1);
 	drawlib.AddDrawLinesCmd(lines1, lineProp1);
 
-	std::vector<std::string> textStrs;
-	textStrs.push_back("spam");
+	std::vector<class TextLabel> textStrs;
+	class TextLabel label("spam", 60.0, 50.0);
+	textStrs.push_back(label);
 	class TextProperties properties;
+	properties.fontSize = 30.0;
 	drawlib.AddDrawTextCmd(textStrs, properties);
 
 	drawlib.Draw();
