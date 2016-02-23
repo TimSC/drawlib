@@ -135,6 +135,8 @@ public:
 	virtual void AddDrawPolygonsCmd(const std::vector<Polygon> &polygons, const class ShapeProperties &properties) = 0;
 	virtual void AddDrawLinesCmd(const Contours &lines, const class LineProperties &properties) = 0;
 	virtual void AddDrawTextCmd(const std::vector<class TextLabel> &textStrs, const class TextProperties &properties) = 0;
+	virtual int GetTextExtents(class TextLabel &textStr, const class TextProperties &properties, 
+		double &width, double &height) = 0;
 
 	virtual void Draw() {};
 };
@@ -153,6 +155,8 @@ public:
 	void AddDrawPolygonsCmd(const std::vector<Polygon> &polygons, const class ShapeProperties &properties);
 	void AddDrawLinesCmd(const Contours &lines, const class LineProperties &properties);
 	void AddDrawTextCmd(const std::vector<class TextLabel> &textStrs, const class TextProperties &properties);
+	int GetTextExtents(class TextLabel &textStr, const class TextProperties &properties, 
+		double &width, double &height);
 };
 
 #endif //_DRAWLIB_H

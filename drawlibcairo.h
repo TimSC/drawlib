@@ -19,16 +19,21 @@ public:
 	virtual ~DrawLibCairo();
 
 	void Draw();
-	
+	int GetTextExtents(class TextLabel &textStr, const class TextProperties &properties, 
+		double &width, double &height);
 };
 
 class DrawLibCairoPango : public DrawLibCairo
 {
+protected:
+	void DrawCmdText(class DrawTextCmd &textCmd);
+
 public:
 	DrawLibCairoPango(cairo_surface_t *surface);
 	virtual ~DrawLibCairoPango();
 
-	void DrawCmdText(class DrawTextCmd &textCmd);
+	int GetTextExtents(class TextLabel &textStr, const class TextProperties &properties, 
+		double &width, double &height);
 };
 
 #endif //_DRAW_LIB_CAIRO_H

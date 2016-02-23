@@ -106,6 +106,24 @@ void DrawLibCairo::DrawCmdText(class DrawTextCmd &textCmd)
 	cairo_restore(this->cr);
 }
 
+int DrawLibCairo::GetTextExtents(class TextLabel &textStr, const class TextProperties &properties, 
+		double &width, double &height)
+{
+	cairo_save (this->cr);
+	cairo_set_font_size(cr, properties.fontSize);
+	cairo_select_font_face(cr, properties.font.c_str(), CAIRO_FONT_SLANT_NORMAL,
+		CAIRO_FONT_WEIGHT_NORMAL);
+
+	cairo_text_extents_t extents;
+	cairo_text_extents (cr,
+                textStr.text.c_str(),
+                &extents);
+	width = extents.width;
+	height = extents.height;
+	cairo_restore(this->cr);
+	return 0;
+}
+
 // *****************************************************
 
 DrawLibCairoPango::DrawLibCairoPango(cairo_surface_t *surface) : DrawLibCairo(surface)
@@ -150,5 +168,31 @@ void DrawLibCairoPango::DrawCmdText(class DrawTextCmd &textCmd)
 	pango_font_description_free (desc);
 
 	cairo_restore(this->cr);
+}
+
+int DrawLibCairoPango::GetTextExtents(class TextLabel &textStr, const class TextProperties &properties, 
+		double &width, double &height)
+{
+	PangoFontDescription *desc = pango_font_description_from_string (properties.font.c_str());
+	pango_font_description_set_size (desc, round(properties.fontSize * PANGO_SCALE));
+
+	PangoLayout *layout = pango_cairo_create_layout (this->cr);
+
+	pango_layout_set_text (layout, textStr.text.c_str(), -1);
+	pango_layout_set_font_description (layout, desc);
+
+	PangoRectangle ink_rect;
+	PangoRectangle logical_rect;
+	pango_layout_get_pixel_extents (layout,
+                            &ink_rect,
+                            &logical_rect);
+
+	width = logical_rect.width;
+	height = logical_rect.height;
+
+	g_object_unref (layout);
+
+	pango_font_description_free (desc);
+	return 0;
 }
 
