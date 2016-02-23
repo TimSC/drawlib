@@ -39,7 +39,7 @@ int main(void)
 	Contour line1;
 	line1.push_back(Point(100, 100));
 	line1.push_back(Point(160, 110));
-	line1.push_back(Point(200, 170));
+	line1.push_back(Point(60, 50));
 	class LineProperties lineProp1(0.0, 0.9, 0.0, 3.0);
 	lineProp1.closedLoop = true;
 	Contours lines1;
@@ -47,7 +47,7 @@ int main(void)
 	drawlib.AddDrawLinesCmd(lines1, lineProp1);
 
 	std::vector<class TextLabel> textStrs;
-	class TextLabel label("spam", 60.0, 50.0);
+	class TextLabel label("Spam", 60.0, 50.0);
 	textStrs.push_back(label);
 	class TextProperties properties;
 	properties.fontSize = 30.0;

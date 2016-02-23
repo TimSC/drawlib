@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <pango/pangocairo.h>
 #include <cmath>
+#include <iostream>
+using namespace std;
 
 DrawLibCairo::DrawLibCairo(cairo_surface_t *surface): LocalStore(),
 	surface(surface)
@@ -93,7 +95,12 @@ void DrawLibCairo::DrawCmdText(class DrawTextCmd &textCmd)
 	const std::vector<class TextLabel> &textStrs = textCmd.textStrs;
 	for(size_t i=0;i < textStrs.size();i++)
 	{
-		cairo_move_to(cr, textStrs[i].x, textStrs[i].y);
+		cairo_text_extents_t extents;
+		cairo_text_extents (cr,
+                    textStrs[i].text.c_str(),
+                    &extents);
+
+		cairo_move_to(cr, textStrs[i].x, textStrs[i].y + extents.height);
 		cairo_show_text(cr, textStrs[i].text.c_str());
 	}
 	cairo_restore(this->cr);
@@ -125,10 +132,16 @@ void DrawLibCairoPango::DrawCmdText(class DrawTextCmd &textCmd)
 	{
 		PangoLayout *layout = pango_cairo_create_layout (cr);
 
-		cairo_move_to(cr, textStrs[i].x, textStrs[i].y);
-
 		pango_layout_set_text (layout, textStrs[i].text.c_str(), -1);
 		pango_layout_set_font_description (layout, desc);
+
+		PangoRectangle ink_rect;
+		PangoRectangle logical_rect;
+		pango_layout_get_pixel_extents (layout,
+                                &ink_rect,
+                                &logical_rect);
+
+		cairo_move_to(cr, textStrs[i].x - logical_rect.x, textStrs[i].y - logical_rect.y);
 		pango_cairo_show_layout (cr, layout);
 
 		g_object_unref (layout);
