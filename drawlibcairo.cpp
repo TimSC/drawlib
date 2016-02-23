@@ -1,5 +1,7 @@
 #include "drawlibcairo.h"
 #include <stdlib.h>
+#include <pango/pangocairo.h>
+#include <cmath>
 
 DrawLibCairo::DrawLibCairo(cairo_surface_t *surface): LocalStore(),
 	surface(surface)
@@ -94,6 +96,46 @@ void DrawLibCairo::DrawCmdText(class DrawTextCmd &textCmd)
 		cairo_move_to(cr, textStrs[i].x, textStrs[i].y);
 		cairo_show_text(cr, textStrs[i].text.c_str());
 	}
+	cairo_restore(this->cr);
+}
+
+// *****************************************************
+
+DrawLibCairoPango::DrawLibCairoPango(cairo_surface_t *surface) : DrawLibCairo(surface)
+{
+	
+}
+
+DrawLibCairoPango::~DrawLibCairoPango()
+{
+
+}
+
+void DrawLibCairoPango::DrawCmdText(class DrawTextCmd &textCmd)
+{
+	cairo_save (this->cr);
+	const class TextProperties &properties = textCmd.properties;
+	cairo_set_source_rgb(cr, properties.r, properties.g, properties.b);
+
+	PangoFontDescription *desc = pango_font_description_from_string (properties.font.c_str());
+	pango_font_description_set_size (desc, round(properties.fontSize * PANGO_SCALE));
+
+	const std::vector<class TextLabel> &textStrs = textCmd.textStrs;
+	for(size_t i=0;i < textStrs.size();i++)
+	{
+		PangoLayout *layout = pango_cairo_create_layout (cr);
+
+		cairo_move_to(cr, textStrs[i].x, textStrs[i].y);
+
+		pango_layout_set_text (layout, textStrs[i].text.c_str(), -1);
+		pango_layout_set_font_description (layout, desc);
+		pango_cairo_show_layout (cr, layout);
+
+		g_object_unref (layout);
+	}
+
+	pango_font_description_free (desc);
+
 	cairo_restore(this->cr);
 }
 

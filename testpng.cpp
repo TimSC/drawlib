@@ -7,7 +7,7 @@ int main(void)
 
 	surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, 320, 240);
 
-	class DrawLibCairo drawlib(surface);
+	class DrawLibCairoPango drawlib(surface);
 	
 	Contour outer;
 	outer.push_back(Point(50, 50));
