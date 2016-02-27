@@ -124,6 +124,15 @@ int DrawLibCairo::GetTextExtents(class TextLabel &textStr, const class TextPrope
 	return 0;
 }
 
+int DrawLibCairo::GetDrawableExtents(double &x1,
+	double &y1,
+	double &x2,
+	double &y2)
+{
+	cairo_clip_extents (this->cr, &x1, &y1, &x2, &y2);
+	return 0; //Zero means ok, non-zero is not ok
+}
+
 // *****************************************************
 
 DrawLibCairoPango::DrawLibCairoPango(cairo_surface_t *surface) : DrawLibCairo(surface)

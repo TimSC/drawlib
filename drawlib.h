@@ -137,6 +137,10 @@ public:
 	virtual void AddDrawTextCmd(const std::vector<class TextLabel> &textStrs, const class TextProperties &properties) = 0;
 	virtual int GetTextExtents(class TextLabel &textStr, const class TextProperties &properties, 
 		double &width, double &height) = 0;
+	virtual int GetDrawableExtents(double &x1,
+		double &y1,
+		double &x2,
+		double &y2){x1=0.0; y1=0.0; x2 = 0.0; y2 = 0.0; return -1;}
 
 	virtual void Draw() {};
 };

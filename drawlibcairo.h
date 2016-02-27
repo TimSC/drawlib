@@ -21,6 +21,10 @@ public:
 	void Draw();
 	int GetTextExtents(class TextLabel &textStr, const class TextProperties &properties, 
 		double &width, double &height);
+	int GetDrawableExtents(double &x1,
+		double &y1,
+		double &x2,
+		double &y2);
 };
 
 class DrawLibCairoPango : public DrawLibCairo
