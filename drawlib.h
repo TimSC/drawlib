@@ -29,6 +29,8 @@ public:
 	ShapeProperties(double r, double g, double b);
 	ShapeProperties(const ShapeProperties &arg);
 	virtual ~ShapeProperties();
+
+	bool operator <(const ShapeProperties& rhs) const;
 };
 
 ///Drawing properties of lines/strokes
@@ -38,11 +40,14 @@ public:
 	double r, g, b;
 	double lineWidth;
 	bool closedLoop;
+	std::string lineJoin, lineCap;
 
 	LineProperties();
 	LineProperties(double r, double g, double b, double lineWidth=1.0);
 	LineProperties(const LineProperties &arg);
 	virtual ~LineProperties();
+
+	bool operator <(const LineProperties& rhs) const;
 };
 
 ///Drawing properties of text drawing
@@ -57,6 +62,8 @@ public:
 	TextProperties(double r, double g, double b);
 	TextProperties(const TextProperties &arg);
 	virtual ~TextProperties();
+
+	bool operator <(const TextProperties& rhs) const;
 };
 
 //Defines a single label and positioning

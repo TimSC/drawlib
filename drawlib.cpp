@@ -15,19 +15,55 @@ ShapeProperties::ShapeProperties(const ShapeProperties &arg)
 ShapeProperties::~ShapeProperties() 
 {}
 
+bool ShapeProperties::operator <(const ShapeProperties& rhs) const
+{
+	if(r < rhs.r) return true;
+	if(r > rhs.r) return false;
+	if(g < rhs.g) return true;
+	if(g > rhs.g) return false;
+	if(b < rhs.b) return true;
+	if(b > rhs.b) return false;
+	return false;
+}
+
+// *********************************************
+
 LineProperties::LineProperties() 
 {r=1.0; g=1.0; b=1.0; lineWidth=1.0; closedLoop = false;}
 
 LineProperties::LineProperties(double r, double g, double b, double lineWidth): r(r), g(g), b(b), 
-	lineWidth(lineWidth), closedLoop(false)
+	lineWidth(lineWidth), closedLoop(false),
+	lineJoin("miter"), lineCap("butt")
 {}
 
 LineProperties::LineProperties(const LineProperties &arg) : r(arg.r), g(arg.g), b(arg.b),
-	lineWidth(arg.lineWidth), closedLoop(arg.closedLoop)
+	lineWidth(arg.lineWidth), closedLoop(arg.closedLoop),
+	lineJoin(arg.lineJoin), lineCap(arg.lineCap)
 {}
 
 LineProperties::~LineProperties()
 {}
+
+bool LineProperties::operator <(const LineProperties& rhs) const
+{
+	if(r < rhs.r) return true;
+	if(r > rhs.r) return false;
+	if(g < rhs.g) return true;
+	if(g > rhs.g) return false;
+	if(b < rhs.b) return true;
+	if(b > rhs.b) return false;
+	if(lineWidth < rhs.lineWidth) return true;
+	if(lineWidth > rhs.lineWidth) return false;
+	if(closedLoop < rhs.closedLoop) return true;
+	if(closedLoop > rhs.closedLoop) return false;
+	if(lineJoin < rhs.lineJoin) return true;
+	if(lineJoin > rhs.lineJoin) return false;
+	if(lineCap < rhs.lineCap) return true;
+	if(lineCap > rhs.lineCap) return false;
+	return false;
+}
+
+// *********************************************
 
 TextProperties::TextProperties()
 {r=1.0; g=1.0; b=1.0; fontSize=10.0; font="Sans";}
@@ -41,6 +77,21 @@ TextProperties::TextProperties(const TextProperties &arg)
 
 TextProperties::~TextProperties()
 {}
+
+bool TextProperties::operator <(const TextProperties& rhs) const
+{
+	if(r < rhs.r) return true;
+	if(r > rhs.r) return false;
+	if(g < rhs.g) return true;
+	if(g > rhs.g) return false;
+	if(b < rhs.b) return true;
+	if(b > rhs.b) return false;
+	if(font < rhs.font) return true;
+	if(font > rhs.font) return false;
+	if(fontSize < rhs.fontSize) return true;
+	if(fontSize > rhs.fontSize) return false;
+	return false;
+}
 
 // *************************************
 

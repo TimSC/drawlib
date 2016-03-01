@@ -65,6 +65,20 @@ void DrawLibCairo::DrawCmdLines(class DrawLinesCmd &linesCmd)
 	cairo_set_source_rgb(cr, properties.r, properties.g, properties.b);
 	cairo_set_line_width (cr, properties.lineWidth);
 
+	if(properties.lineCap == "butt") //cairo default
+		cairo_set_line_cap (cr, CAIRO_LINE_CAP_BUTT);
+	if(properties.lineCap == "sqaure")
+		cairo_set_line_cap (cr, CAIRO_LINE_CAP_SQUARE);
+	if(properties.lineCap == "round")
+		cairo_set_line_cap (cr, CAIRO_LINE_CAP_ROUND);
+
+	if(properties.lineJoin == "miter") //cairo default
+		cairo_set_line_join (cr, CAIRO_LINE_JOIN_MITER);
+	if(properties.lineJoin == "round") //cairo default
+		cairo_set_line_join (cr, CAIRO_LINE_JOIN_ROUND);
+	if(properties.lineJoin == "bevel") //cairo default
+		cairo_set_line_join (cr, CAIRO_LINE_JOIN_BEVEL);
+
 	const Contours &lines = linesCmd.lines;
 	for(size_t i=0;i < lines.size();i++)
 	{
