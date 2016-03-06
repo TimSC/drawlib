@@ -222,7 +222,7 @@ void LocalStore::AddDrawTextCmd(const std::vector<class TextLabel> &textStrs, co
 	this->AddCmd(&cmd);
 }
 
-int LocalStore::GetTextExtents(class TextLabel &textStr, const class TextProperties &properties, 
+int LocalStore::GetTextExtents(const char *textStr, const class TextProperties &properties, 
 		double &width, double &height)
 {
 	width = -1.0;

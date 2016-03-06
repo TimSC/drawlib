@@ -19,7 +19,7 @@ public:
 	virtual ~DrawLibCairo();
 
 	void Draw();
-	int GetTextExtents(class TextLabel &textStr, const class TextProperties &properties, 
+	int GetTextExtents(const char *textStr, const class TextProperties &properties, 
 		double &width, double &height);
 	int GetDrawableExtents(double &x1,
 		double &y1,
@@ -36,7 +36,7 @@ public:
 	DrawLibCairoPango(cairo_surface_t *surface);
 	virtual ~DrawLibCairoPango();
 
-	int GetTextExtents(class TextLabel &textStr, const class TextProperties &properties, 
+	int GetTextExtents(const char *textStr, const class TextProperties &properties, 
 		double &width, double &height);
 };
 
