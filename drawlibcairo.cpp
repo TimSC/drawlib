@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <pango/pangocairo.h>
 #include <cmath>
+#include <stdexcept>
 #include <iostream>
 using namespace std;
 
@@ -40,7 +41,7 @@ void DrawLibCairo::DrawCmdPolygons(class DrawPolygonsCmd &polygonsCmd)
 {
 	cairo_save (this->cr);
 	const class ShapeProperties &properties = polygonsCmd.properties;
-	cairo_set_source_rgb(cr, properties.r, properties.g, properties.b);
+	cairo_set_source_rgba(cr, properties.r, properties.g, properties.b, properties.a);
 
 	const std::vector<Polygon> &polygons = polygonsCmd.polygons;
 	for(size_t i=0;i < polygons.size();i++)
@@ -62,7 +63,7 @@ void DrawLibCairo::DrawCmdLines(class DrawLinesCmd &linesCmd)
 {
 	cairo_save (this->cr);
 	const class LineProperties &properties = linesCmd.properties;
-	cairo_set_source_rgb(cr, properties.r, properties.g, properties.b);
+	cairo_set_source_rgba(cr, properties.r, properties.g, properties.b, properties.a);
 	cairo_set_line_width (cr, properties.lineWidth);
 
 	if(properties.lineCap == "butt") //cairo default
@@ -101,10 +102,14 @@ void DrawLibCairo::DrawCmdText(class DrawTextCmd &textCmd)
 {
 	cairo_save (this->cr);
 	const class TextProperties &properties = textCmd.properties;
-	cairo_set_source_rgb(cr, properties.r, properties.g, properties.b);
+	cairo_set_source_rgba(cr, properties.r, properties.g, properties.b, properties.a);
 	cairo_set_font_size(cr, properties.fontSize);
 	cairo_select_font_face(cr, properties.font.c_str(), CAIRO_FONT_SLANT_NORMAL,
 		CAIRO_FONT_WEIGHT_NORMAL);
+
+	if(!properties.outline){
+		throw std::runtime_error("Not implemented");
+	}
 
 	const std::vector<class TextLabel> &textStrs = textCmd.textStrs;
 	for(size_t i=0;i < textStrs.size();i++)

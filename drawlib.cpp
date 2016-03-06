@@ -4,13 +4,13 @@
 using namespace std;
 
 ShapeProperties::ShapeProperties() 
-{r=1.0; g=1.0; b=1.0;}
+{r=1.0; g=1.0; b=1.0; a=1.0;}
 
-ShapeProperties::ShapeProperties(double r, double g, double b): r(r), g(g), b(b) 
+ShapeProperties::ShapeProperties(double r, double g, double b): r(r), g(g), b(b), a(1.0) 
 {}
 
 ShapeProperties::ShapeProperties(const ShapeProperties &arg) 
-{r=arg.r; g=arg.g; b=arg.b;}
+{r=arg.r; g=arg.g; b=arg.b; a=arg.a;}
 
 ShapeProperties::~ShapeProperties() 
 {}
@@ -23,20 +23,22 @@ bool ShapeProperties::operator <(const ShapeProperties& rhs) const
 	if(g > rhs.g) return false;
 	if(b < rhs.b) return true;
 	if(b > rhs.b) return false;
+	if(a < rhs.a) return true;
+	if(a > rhs.a) return false;
 	return false;
 }
 
 // *********************************************
 
 LineProperties::LineProperties() 
-{r=1.0; g=1.0; b=1.0; lineWidth=1.0; closedLoop = false;}
+{r=1.0; g=1.0; b=1.0; a=1.0; lineWidth=1.0; closedLoop = false;}
 
-LineProperties::LineProperties(double r, double g, double b, double lineWidth): r(r), g(g), b(b), 
+LineProperties::LineProperties(double r, double g, double b, double lineWidth): r(r), g(g), b(b), a(1.0),
 	lineWidth(lineWidth), closedLoop(false),
 	lineJoin("miter"), lineCap("butt")
 {}
 
-LineProperties::LineProperties(const LineProperties &arg) : r(arg.r), g(arg.g), b(arg.b),
+LineProperties::LineProperties(const LineProperties &arg) : r(arg.r), g(arg.g), b(arg.b), a(arg.a),
 	lineWidth(arg.lineWidth), closedLoop(arg.closedLoop),
 	lineJoin(arg.lineJoin), lineCap(arg.lineCap)
 {}
@@ -52,6 +54,8 @@ bool LineProperties::operator <(const LineProperties& rhs) const
 	if(g > rhs.g) return false;
 	if(b < rhs.b) return true;
 	if(b > rhs.b) return false;
+	if(a < rhs.a) return true;
+	if(a > rhs.a) return false;
 	if(lineWidth < rhs.lineWidth) return true;
 	if(lineWidth > rhs.lineWidth) return false;
 	if(closedLoop < rhs.closedLoop) return true;
@@ -66,16 +70,16 @@ bool LineProperties::operator <(const LineProperties& rhs) const
 // *********************************************
 
 TextProperties::TextProperties()
-{r=1.0; g=1.0; b=1.0; fontSize=10.0; font="Sans"; outline = false; lineWidth = 1.0;
+{r=1.0; g=1.0; b=1.0; a=1.0; fontSize=10.0; font="Sans"; outline = false; lineWidth = 1.0;
 }
 
-TextProperties::TextProperties(double r, double g, double b): r(r), g(g), b(b),
+TextProperties::TextProperties(double r, double g, double b): r(r), g(g), b(b), a(1.0),
 	fontSize(10.0), font("Sans"), outline(false), lineWidth(1.0)
 {}
 
 TextProperties::TextProperties(const TextProperties &arg)
 {
-	r=arg.r; g=arg.g; b=arg.b; fontSize=arg.fontSize; font=arg.font; 
+	r=arg.r; g=arg.g; b=arg.b; a=arg.a; fontSize=arg.fontSize; font=arg.font; 
 	outline=arg.outline; lineWidth=arg.lineWidth;
 }
 
@@ -90,6 +94,8 @@ bool TextProperties::operator <(const TextProperties& rhs) const
 	if(g > rhs.g) return false;
 	if(b < rhs.b) return true;
 	if(b > rhs.b) return false;
+	if(a < rhs.a) return true;
+	if(a > rhs.a) return false;
 	if(font < rhs.font) return true;
 	if(font > rhs.font) return false;
 	if(fontSize < rhs.fontSize) return true;

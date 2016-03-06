@@ -23,7 +23,7 @@ enum CmdTypes
 class ShapeProperties
 {
 public:
-	double r, g, b;
+	double r, g, b, a;
 
 	ShapeProperties();
 	ShapeProperties(double r, double g, double b);
@@ -37,7 +37,7 @@ public:
 class LineProperties
 {
 public:
-	double r, g, b;
+	double r, g, b, a;
 	double lineWidth;
 	bool closedLoop;
 	std::string lineJoin, lineCap;
@@ -54,7 +54,7 @@ public:
 class TextProperties
 {
 public:
-	double r, g, b;
+	double r, g, b, a;
 	std::string font;
 	double fontSize;
 	bool outline;
@@ -68,7 +68,7 @@ public:
 	bool operator <(const TextProperties& rhs) const;
 };
 
-//Defines a single label and positioning
+///Defines a single label and positioning
 class TextLabel
 {
 public:
