@@ -66,14 +66,18 @@ bool LineProperties::operator <(const LineProperties& rhs) const
 // *********************************************
 
 TextProperties::TextProperties()
-{r=1.0; g=1.0; b=1.0; fontSize=10.0; font="Sans";}
+{r=1.0; g=1.0; b=1.0; fontSize=10.0; font="Sans"; outline = false; lineWidth = 1.0;
+}
 
 TextProperties::TextProperties(double r, double g, double b): r(r), g(g), b(b),
-	fontSize(10.0), font("Sans")
+	fontSize(10.0), font("Sans"), outline(false), lineWidth(1.0)
 {}
 
 TextProperties::TextProperties(const TextProperties &arg)
-{r=arg.r; g=arg.g; b=arg.b; fontSize=arg.fontSize; font=arg.font;}
+{
+	r=arg.r; g=arg.g; b=arg.b; fontSize=arg.fontSize; font=arg.font; 
+	outline=arg.outline; lineWidth=arg.lineWidth;
+}
 
 TextProperties::~TextProperties()
 {}
@@ -90,6 +94,11 @@ bool TextProperties::operator <(const TextProperties& rhs) const
 	if(font > rhs.font) return false;
 	if(fontSize < rhs.fontSize) return true;
 	if(fontSize > rhs.fontSize) return false;
+	if(outline < rhs.outline) return true;
+	if(outline > rhs.outline) return false;
+	if(lineWidth < rhs.lineWidth) return true;
+	if(lineWidth > rhs.lineWidth) return false;
+
 	return false;
 }
 

@@ -57,6 +57,8 @@ public:
 	double r, g, b;
 	std::string font;
 	double fontSize;
+	bool outline;
+	double lineWidth;
 
 	TextProperties();
 	TextProperties(double r, double g, double b);

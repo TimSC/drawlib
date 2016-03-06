@@ -183,7 +183,16 @@ void DrawLibCairoPango::DrawCmdText(class DrawTextCmd &textCmd)
                                 &logical_rect);
 
 		cairo_move_to(cr, textStrs[i].x - logical_rect.x, textStrs[i].y - logical_rect.y);
-		pango_cairo_show_layout (cr, layout);
+
+		if(!properties.outline){
+			pango_cairo_show_layout (cr, layout);
+		}
+		else
+		{
+			cairo_set_line_width(cr, properties.lineWidth);
+			pango_cairo_layout_path(cr, layout);
+			cairo_stroke(cr);
+		}
 
 		g_object_unref (layout);
 	}
