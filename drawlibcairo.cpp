@@ -168,7 +168,7 @@ void DrawLibCairoPango::DrawCmdText(class DrawTextCmd &textCmd)
 {
 	cairo_save (this->cr);
 	const class TextProperties &properties = textCmd.properties;
-	cairo_set_source_rgb(cr, properties.r, properties.g, properties.b);
+	cairo_set_source_rgba(cr, properties.r, properties.g, properties.b, properties.a);
 
 	PangoFontDescription *desc = pango_font_description_from_string (properties.font.c_str());
 	pango_font_description_set_size (desc, round(properties.fontSize * PANGO_SCALE));
