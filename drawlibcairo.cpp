@@ -43,18 +43,33 @@ void DrawLibCairo::DrawCmdPolygons(class DrawPolygonsCmd &polygonsCmd)
 	const class ShapeProperties &properties = polygonsCmd.properties;
 	cairo_set_source_rgba(cr, properties.r, properties.g, properties.b, properties.a);
 
+	//Draw outer polygons
 	const std::vector<Polygon> &polygons = polygonsCmd.polygons;
 	for(size_t i=0;i < polygons.size();i++)
 	{
 		const Polygon &polygon = polygons[i];
 		const Contour &outer = polygon.first;
-		if(outer.size() > 0)
-			cairo_move_to(cr, outer[0].first, outer[0].second);
-		for(size_t pt=1;pt < outer.size();pt++)
+		const Contours &inners = polygon.second;
+
+		//Mask out any inner ploygons
+		/*for(size_t j=0; j < inners.size(); j++)
 		{
-			cairo_line_to(cr, outer[pt].first, outer[pt].second);
+			const Contour &inner = inners[j];
+			if(inner.size() > 0) {
+				cairo_move_to(cr, inner[0].first, inner[0].second);
+				for(size_t pt=1;pt < inner.size();pt++)
+					cairo_line_to(cr, inner[pt].first, inner[pt].second);
+				cairo_clip(cr);
+			}
+		}*/
+
+		//Draw outer polygon
+		if(outer.size() > 0) {
+			cairo_move_to(cr, outer[0].first, outer[0].second);
+			for(size_t pt=1;pt < outer.size();pt++)
+				cairo_line_to(cr, outer[pt].first, outer[pt].second);
+			cairo_fill (cr);
 		}
-		cairo_fill (cr);
 	}
 	cairo_restore(this->cr);
 }
