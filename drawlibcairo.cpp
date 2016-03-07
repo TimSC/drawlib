@@ -10,11 +10,14 @@ DrawLibCairo::DrawLibCairo(cairo_surface_t *surface): LocalStore(),
 	surface(surface)
 {
 	this->cr = cairo_create(surface);
+	this->maskSurface = NULL;
 }
 
 DrawLibCairo::~DrawLibCairo()
 {
 	cairo_destroy(this->cr);
+	if(this->maskSurface != NULL)
+		cairo_surface_destroy(maskSurface);
 }
 
 void DrawLibCairo::Draw()
@@ -37,6 +40,22 @@ void DrawLibCairo::Draw()
 	}
 }
 
+void DrawLibCairo::CreateMaskSurface(double width, double height)
+{
+	if(this->maskSurface != NULL) 
+		cairo_surface_destroy(maskSurface);
+
+	//Create mask surface
+	this->maskSurface = cairo_image_surface_create (CAIRO_FORMAT_A8,
+		                round(width),
+		                round(height));
+	if(cairo_surface_status(this->maskSurface)!=CAIRO_STATUS_SUCCESS)
+	{
+		cairo_restore(this->cr);
+		throw runtime_error("Creating cairo surface failed");
+	}
+}
+
 void DrawLibCairo::DrawCmdPolygons(class DrawPolygonsCmd &polygonsCmd)
 {
 	cairo_save (this->cr);
@@ -52,32 +71,43 @@ void DrawLibCairo::DrawCmdPolygons(class DrawPolygonsCmd &polygonsCmd)
 
 		double x1=0.0, x2=0.0, y1=0.0, y2=0.0;
 
-		cairo_surface_t *maskSurface = NULL;
 		if(inners.size() > 0)
 		{
 			this->GetDrawableExtents(x1, y1, x2, y2);
 			double width = x2 - x1;
 			double height = y2 - y1;
 
-			//Create mask surface
-			maskSurface = cairo_image_surface_create (CAIRO_FORMAT_ARGB32,
-				                width,
-				                height);
-			if(cairo_surface_status(maskSurface)!=CAIRO_STATUS_SUCCESS)
+			if(maskSurface == NULL)
+				this->CreateMaskSurface(width, height);
+			else
 			{
-				cairo_restore(this->cr);
-				throw runtime_error("Creating cairo surface failed");
+				//Check if mask surface can be reused
+				int msw = cairo_image_surface_get_width (maskSurface);
+				int msh = cairo_image_surface_get_height (maskSurface);
+				if(round(width) != msw || round(height) != msh)
+				{
+					//Surface must be recreated
+					this->CreateMaskSurface(width, height);
+				}
 			}
-			cairo_t *maskCr = cairo_create (maskSurface);
 
+			cairo_t *maskCr = cairo_create (maskSurface);
 			cairo_set_operator (maskCr, CAIRO_OPERATOR_SOURCE);
+
+			//Clear mask surface content
+			cairo_set_source_rgba(maskCr, 0.0, 0.0, 0.0, 0.0);
+			cairo_move_to(maskCr, 0.0, 0.0);
+			cairo_line_to(maskCr, width, 0.0);
+			cairo_line_to(maskCr, width, height);
+			cairo_line_to(maskCr, 0.0, height);
+			cairo_fill (maskCr);
 
 			//Draw outer polygon to mask surface
 			cairo_set_source_rgba(maskCr, 1.0, 1.0, 1.0, 1.0);
 			if(outer.size() > 0) {
-				cairo_move_to(maskCr, outer[0].first, outer[0].second);
+				cairo_move_to(maskCr, outer[0].first-x1, outer[0].second-y1);
 				for(size_t pt=1;pt < outer.size();pt++)
-					cairo_line_to(maskCr, outer[pt].first, outer[pt].second);
+					cairo_line_to(maskCr, outer[pt].first-x1, outer[pt].second-y1);
 				cairo_fill (maskCr);
 			}
 
@@ -101,7 +131,7 @@ void DrawLibCairo::DrawCmdPolygons(class DrawPolygonsCmd &polygonsCmd)
 			cairo_set_source_rgba(cr, properties.r, properties.g, properties.b, properties.a);
 			cairo_mask_surface(cr, maskSurface, x1, y1);
 			cairo_fill (cr);
-			cairo_surface_destroy(maskSurface);
+			
 		}
 		else
 		{

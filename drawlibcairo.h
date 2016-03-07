@@ -10,10 +10,13 @@ class DrawLibCairo : public LocalStore
 protected:
 	cairo_t *cr;
 	cairo_surface_t *surface;
+	cairo_surface_t *maskSurface;
 
 	virtual void DrawCmdPolygons(class DrawPolygonsCmd &polygons);
 	virtual void DrawCmdLines(class DrawLinesCmd &linesCmd);
 	virtual void DrawCmdText(class DrawTextCmd &textCmd);
+
+	void CreateMaskSurface(double width, double height);
 public:
 	DrawLibCairo(cairo_surface_t *surface);
 	virtual ~DrawLibCairo();
