@@ -46,7 +46,7 @@ void DrawTestPatterns(class IDrawLib *drawLib)
 	class TextLabel label("Spam", 60.0, 50.0);
 	class TextProperties properties;
 	properties.fontSize = 30.0;
-	drawLib->GetTextExtents(label, properties, 
+	drawLib->GetTextExtents("Spam", properties, 
 		width, height);
 	cout << "text w: "<< width << ", h: " << height << endl;
 
