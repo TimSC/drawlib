@@ -197,10 +197,8 @@ void DrawLibCairo::DrawCmdText(class DrawTextCmd &textCmd)
 	cairo_set_font_size(cr, properties.fontSize);
 	cairo_select_font_face(cr, properties.font.c_str(), CAIRO_FONT_SLANT_NORMAL,
 		CAIRO_FONT_WEIGHT_NORMAL);
-
-	if(!properties.outline){
-		throw std::runtime_error("Not implemented");
-	}
+	if(properties.outline)
+		cairo_set_line_width (cr, properties.lineWidth);
 
 	const std::vector<class TextLabel> &textStrs = textCmd.textStrs;
 	for(size_t i=0;i < textStrs.size();i++)
@@ -214,7 +212,13 @@ void DrawLibCairo::DrawCmdText(class DrawTextCmd &textCmd)
 		cairo_save (this->cr);
 		if(textStrs[i].ang!= 0.0)
 			cairo_rotate (cr, textStrs[i].ang);
-		cairo_show_text(cr, textStrs[i].text.c_str());
+		if(!properties.outline)
+			cairo_show_text(cr, textStrs[i].text.c_str());
+		else
+		{
+			cairo_text_path(cr, textStrs[i].text.c_str());
+			cairo_stroke (cr);
+		}
 		cairo_restore(this->cr);
 	}
 	cairo_restore(this->cr);
