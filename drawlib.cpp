@@ -110,17 +110,17 @@ bool TextProperties::operator <(const TextProperties& rhs) const
 
 // *************************************
 
-TextLabel::TextLabel() : x(0.0), y(0.0)
+TextLabel::TextLabel() : x(0.0), y(0.0), ang(0.0)
 {}
 
-TextLabel::TextLabel(std::string &text, double x, double y): text(text), x(x), y(y)
+TextLabel::TextLabel(std::string &text, double x, double y, double ang): text(text), x(x), y(y), ang(ang)
 {}
 
-TextLabel::TextLabel(const char *text, double x, double y): text(text), x(x), y(y)
+TextLabel::TextLabel(const char *text, double x, double y, double ang): text(text), x(x), y(y), ang(ang)
 {}
 
 TextLabel::TextLabel(const TextLabel &arg):
-	x(arg.x), y(arg.y), text(arg.text)
+	x(arg.x), y(arg.y), text(arg.text), ang(arg.ang)
 {}
 
 TextLabel::~TextLabel()

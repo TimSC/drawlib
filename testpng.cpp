@@ -45,13 +45,21 @@ void DrawTestPatterns(class IDrawLib *drawLib)
 	std::vector<class TextLabel> textStrs;
 
 	double width = 0.0, height = 0.0;
-	class TextLabel label("Hello", 60.0, 50.0);
+	const char *hello = "Hello";
+	const char *arabic = "السلام عليكم";
+	class TextLabel label(hello, 60.0, 50.0);
+	class TextLabel interlLabel(arabic, 50.0, 200.0);
+
 	class TextProperties properties;
 	properties.fontSize = 30.0;
-	drawLib->GetTextExtents("Hello", properties, 
+	drawLib->GetTextExtents(hello, properties, 
 		width, height);
 	cout << "text w: "<< width << ", h: " << height << endl;
+	drawLib->GetTextExtents(arabic, properties, 
+		width, height);
+	cout << "text2 w: "<< width << ", h: " << height << endl;
 	textStrs.push_back(label);
+	textStrs.push_back(interlLabel);
 	drawLib->AddDrawTextCmd(textStrs, properties);
 
 	textStrs.clear();
@@ -59,8 +67,24 @@ void DrawTestPatterns(class IDrawLib *drawLib)
 	class TextProperties properties2;
 	properties2.fontSize = 25.0;
 	properties2.outline = true;
+	properties2.r = 1.0;
+	properties2.g = 0.5;
+	properties2.b = 0.1;
 	textStrs.push_back(label2);
 	drawLib->AddDrawTextCmd(textStrs, properties2);
+
+	textStrs.clear();
+	class TextLabel label3("rotated", 60.0, 100.0, 0.5);
+	textStrs.push_back(label3);
+	drawLib->AddDrawTextCmd(textStrs, properties2);
+
+	textStrs.clear();
+	class TextLabel label4("rotated", 60.0, 100.0, 0.6);
+	class TextLabel label5("foo", 180.0, 100.0, 0.0);
+	properties.a = 0.5;
+	textStrs.push_back(label4);
+	textStrs.push_back(label5);
+	drawLib->AddDrawTextCmd(textStrs, properties);
 
 	drawLib->Draw();
 

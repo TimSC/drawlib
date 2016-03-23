@@ -73,11 +73,11 @@ class TextLabel
 {
 public:
 	std::string text;
-	double x, y;
+	double x, y, ang; //ang in radians, clockwise
 
 	TextLabel();
-	TextLabel(std::string &text, double x, double y);
-	TextLabel(const char *text, double x, double y);
+	TextLabel(std::string &text, double x, double y, double ang=0.0);
+	TextLabel(const char *text, double x, double y, double ang=0.0);
 	TextLabel(const TextLabel &arg);
 	virtual ~TextLabel();
 };

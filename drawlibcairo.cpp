@@ -211,7 +211,11 @@ void DrawLibCairo::DrawCmdText(class DrawTextCmd &textCmd)
                     &extents);
 
 		cairo_move_to(cr, textStrs[i].x, textStrs[i].y + extents.height);
+		cairo_save (this->cr);
+		if(textStrs[i].ang!= 0.0)
+			cairo_rotate (cr, textStrs[i].ang);
 		cairo_show_text(cr, textStrs[i].text.c_str());
+		cairo_restore(this->cr);
 	}
 	cairo_restore(this->cr);
 }
@@ -279,6 +283,9 @@ void DrawLibCairoPango::DrawCmdText(class DrawTextCmd &textCmd)
                                 &logical_rect);
 
 		cairo_move_to(cr, textStrs[i].x - logical_rect.x, textStrs[i].y - logical_rect.y);
+		cairo_save (this->cr);
+		if(textStrs[i].ang!= 0.0)
+			cairo_rotate (cr, textStrs[i].ang);
 
 		if(!properties.outline){
 			pango_cairo_show_layout (cr, layout);
@@ -291,6 +298,7 @@ void DrawLibCairoPango::DrawCmdText(class DrawTextCmd &textCmd)
 		}
 
 		g_object_unref (layout);
+		cairo_restore(this->cr);
 	}
 
 	pango_font_description_free (desc);
