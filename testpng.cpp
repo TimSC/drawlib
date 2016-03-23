@@ -41,18 +41,27 @@ void DrawTestPatterns(class IDrawLib *drawLib)
 	lines1.push_back(line1);
 	drawLib->AddDrawLinesCmd(lines1, lineProp1);
 
-	//Text extents
+	//Text labels
+	std::vector<class TextLabel> textStrs;
+
 	double width = 0.0, height = 0.0;
-	class TextLabel label("Spam", 60.0, 50.0);
+	class TextLabel label("Hello", 60.0, 50.0);
 	class TextProperties properties;
 	properties.fontSize = 30.0;
-	drawLib->GetTextExtents("Spam", properties, 
+	drawLib->GetTextExtents("Hello", properties, 
 		width, height);
 	cout << "text w: "<< width << ", h: " << height << endl;
-
-	std::vector<class TextLabel> textStrs;
 	textStrs.push_back(label);
 	drawLib->AddDrawTextCmd(textStrs, properties);
+
+	textStrs.clear();
+	class TextLabel label2("world", 170.0, 50.0);
+	class TextProperties properties2;
+	properties2.fontSize = 25.0;
+	properties2.outline = true;
+	textStrs.push_back(label2);
+	drawLib->AddDrawTextCmd(textStrs, properties2);
+
 	drawLib->Draw();
 
 }
