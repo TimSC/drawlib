@@ -9,6 +9,7 @@
 #include <math.h>
 #include <stdlib.h>
 #include <pango/pangocairo.h>
+#include <vector>
 
 void fancy_cairo_stroke (cairo_t *cr);
 void fancy_cairo_stroke_preserve (cairo_t *cr);
@@ -208,55 +209,49 @@ typedef double parametrization_t;
 
 /* Compute parametrization info.	That is, for each part of the 
  * cairo path, tags it with its length.
- *
- * Free returned value with g_free().
  */
-static parametrization_t *
-parametrize_path (cairo_path_t *path)
+void parametrize_path (cairo_path_t *path, std::vector<parametrization_t> &parametrizationOut)
 {
 	int i;
 	cairo_path_data_t *data, last_move_to, current_point;
 	parametrization_t *parametrization;
 
-	parametrization = (parametrization_t *)g_malloc (path->num_data * sizeof (parametrization[0]));
+	parametrizationOut.resize(path->num_data);
 
 	for (i=0; i < path->num_data; i += path->data[i].header.length) {
 		data = &path->data[i];
-		parametrization[i] = 0.0;
+		parametrizationOut[i] = 0.0;
 		switch (data->header.type) {
 		case CAIRO_PATH_MOVE_TO:
-	last_move_to = data[1];
-	current_point = data[1];
-	break;
+			last_move_to = data[1];
+			current_point = data[1];
+			break;
 		case CAIRO_PATH_CLOSE_PATH:
-	/* Make it look like it's a line_to to last_move_to */
-	data = (&last_move_to) - 1;
-	/* fall through */
+			/* Make it look like it's a line_to to last_move_to */
+			data = (&last_move_to) - 1;
+			/* fall through */
 		case CAIRO_PATH_LINE_TO:
-	parametrization[i] = two_points_distance (&current_point, &data[1]);
-	current_point = data[1];
-	break;
+			parametrizationOut[i] = two_points_distance (&current_point, &data[1]);
+			current_point = data[1];
+			break;
 		case CAIRO_PATH_CURVE_TO:
-	/* naive curve-length, treating bezier as three line segments:
-	parametrization[i] = two_points_distance (&current_point, &data[1])
-				 + two_points_distance (&data[1], &data[2])
-				 + two_points_distance (&data[2], &data[3]);
-	*/
-	parametrization[i] = curve_length (current_point.point.x, current_point.point.x,
-						 data[1].point.x, data[1].point.y,
-						 data[2].point.x, data[2].point.y,
-						 data[3].point.x, data[3].point.y);
+			/* naive curve-length, treating bezier as three line segments:
+			parametrization[i] = two_points_distance (&current_point, &data[1])
+						 + two_points_distance (&data[1], &data[2])
+						 + two_points_distance (&data[2], &data[3]);
+			*/
+			parametrizationOut[i] = curve_length (current_point.point.x, current_point.point.x,
+								 data[1].point.x, data[1].point.y,
+								 data[2].point.x, data[2].point.y,
+								 data[3].point.x, data[3].point.y);
 
-	current_point = data[3];
-	break;
+			current_point = data[3];
+			break;
 		default:
-	g_assert_not_reached ();
+			g_assert_not_reached ();
 		}
 	}
-
-	return parametrization;
 }
-
 
 typedef void (*transform_point_func_t) (void *closure, double *x, double *y);
 
@@ -287,13 +282,11 @@ transform_path (cairo_path_t *path, transform_point_func_t f, void *closure)
 	}
 }
 
-
 /* Simple struct to hold a path and its parametrization */
 typedef struct {
 	cairo_path_t *path;
-	parametrization_t *parametrization;
+	std::vector<parametrization_t> parametrization;
 } parametrized_path_t;
-
 
 /* Project a point X,Y onto a parameterized path.	The final point is
  * where you get if you walk on the path forward from the beginning for X
@@ -324,7 +317,7 @@ point_on_path (parametrized_path_t *param,
 	double ratio, the_y = *y, the_x = *x, dx, dy;
 	cairo_path_data_t *data, last_move_to, current_point;
 	cairo_path_t *path = param->path;
-	parametrization_t *parametrization = param->parametrization;
+	std::vector<parametrization_t> &parametrization = param->parametrization;
 
 	for (i=0; i + path->data[i].header.length < path->num_data &&
 			(the_x > parametrization[i] ||
@@ -334,19 +327,19 @@ point_on_path (parametrized_path_t *param,
 		data = &path->data[i];
 		switch (data->header.type) {
 		case CAIRO_PATH_MOVE_TO:
-	current_point = data[1];
-				last_move_to = data[1];
-	break;
+			current_point = data[1];
+			last_move_to = data[1];
+			break;
 		case CAIRO_PATH_LINE_TO:
-	current_point = data[1];
-	break;
+			current_point = data[1];
+			break;
 		case CAIRO_PATH_CURVE_TO:
-	current_point = data[3];
-	break;
+			current_point = data[3];
+			break;
 		case CAIRO_PATH_CLOSE_PATH:
-	break;
+			break;
 		default:
-	g_assert_not_reached ();
+			g_assert_not_reached ();
 		}
 	}
 	data = &path->data[i];
@@ -448,7 +441,7 @@ map_path_onto (cairo_t *cr, cairo_path_t *path,
 	parametrized_path_t param;
 
 	param.path = path;
-	param.parametrization = parametrize_path (path);
+	parametrize_path (path, param.parametrization);
 
 	current_path = cairo_copy_path (cr);
 	cairo_new_path (cr);
@@ -461,7 +454,7 @@ map_path_onto (cairo_t *cr, cairo_path_t *path,
 	cairo_append_path (cr, current_path);
 
 	cairo_path_destroy (current_path);
-	g_free (param.parametrization);
+	param.parametrization.clear();
 }
 
 
@@ -537,7 +530,7 @@ draw_twisted (cairo_t *cr,
 	 * artifact.
 	 */
 	path = cairo_copy_path_flat (cr);
-/*path = cairo_copy_path (cr);*/
+	/*path = cairo_copy_path (cr);*/
 
 	cairo_new_path (cr);
 
