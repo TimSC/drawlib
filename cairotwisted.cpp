@@ -431,25 +431,13 @@ point_on_path (parametrized_path_t *param,
 
 /* Projects the current path of cr onto the provided path. */
 static void
-map_path_onto (cairo_t *cr, cairo_path_t *path,
-	PangoRectangle *ink_rect,
-	PangoRectangle *logical_rect,
-	double *testx,
-	double *testy)
+map_path_onto (cairo_t *cr, parametrized_path_t &param)
 {
-	cairo_path_t *current_path;
-	parametrized_path_t param;
-
-	param.path = path;
-	parametrize_path (path, param.parametrization);
-
-	current_path = cairo_copy_path (cr);
+	cairo_path_t *current_path = cairo_copy_path (cr);
 	cairo_new_path (cr);
 
 	transform_path (current_path,
 			(transform_point_func_t) point_on_path, &param);
-
-	point_on_path(&param, testx, testy);
 
 	cairo_append_path (cr, current_path);
 
@@ -540,9 +528,15 @@ draw_twisted (cairo_t *cr,
 	printf("ink %d %d %d %d\n", ink_rect.x, ink_rect.y, ink_rect.width, ink_rect.height);
 	printf("logical %d %d %d %d\n", logical_rect.x, logical_rect.y, logical_rect.width, logical_rect.height);
 
+	parametrized_path_t param;
+	param.path = path;
+	parametrize_path (path, param.parametrization);
+
+	map_path_onto (cr, param);
+
 	*testx = logical_rect.width + logical_rect.x + x;
 	*testy = y;
-	map_path_onto (cr, path, &ink_rect, &logical_rect, testx, testy);
+	point_on_path(&param, testx, testy);
 	printf("%lf %lf\n", *testx, *testy);
 
 	cairo_path_destroy (path);
