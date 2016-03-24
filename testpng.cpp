@@ -62,6 +62,22 @@ void DrawTestPatterns(class IDrawLib *drawLib)
 	textStrs.push_back(interlLabel);
 	drawLib->AddDrawTextCmd(textStrs, properties);
 
+	//Draw origin point
+	
+	Contour cross1;
+	cross1.push_back(Point(55, 50));
+	cross1.push_back(Point(65, 50));
+	Contour cross2;
+	cross2.push_back(Point(60, 45));
+	cross2.push_back(Point(60, 55));
+	class LineProperties lineProp2(0.0, 0.0, 1.0, 2.0);
+	Contours lines2;
+	lines2.push_back(cross1);
+	lines2.push_back(cross2);
+	drawLib->AddDrawLinesCmd(lines2, lineProp2);
+
+	//More label tests
+
 	textStrs.clear();
 	class TextLabel label2("world", 170.0, 50.0);
 	class TextProperties properties2;

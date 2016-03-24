@@ -73,7 +73,8 @@ class TextLabel
 {
 public:
 	std::string text;
-	double x, y, ang; //ang in radians, clockwise
+	double x, y; //Top left corner (unlike cairo)
+	double ang; //ang in radians, clockwise
 
 	TextLabel();
 	TextLabel(std::string &text, double x, double y, double ang=0.0);
