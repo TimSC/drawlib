@@ -13,6 +13,8 @@
 
 void fancy_cairo_stroke (cairo_t *cr);
 void fancy_cairo_stroke_preserve (cairo_t *cr);
+typedef std::pair<double, double> TwistedPoint;
+typedef std::vector<std::vector<TwistedPoint> > TwistedTriangles;
 
 /* A fancy cairo_stroke[_preserve]() that draws points and control
  * points, and connects them together.
@@ -64,25 +66,25 @@ _fancy_cairo_stroke (cairo_t *cr, cairo_bool_t preserve)
 		data = &path->data[i];
 		switch (data->header.type) {
 		case CAIRO_PATH_MOVE_TO:
-	cairo_move_to (cr, data[1].point.x, data[1].point.y);
-	break;
+			cairo_move_to (cr, data[1].point.x, data[1].point.y);
+			break;
 		case CAIRO_PATH_LINE_TO:
-	cairo_rel_line_to (cr, 0, 0);
-	cairo_move_to (cr, data[1].point.x, data[1].point.y);
-	break;
+			cairo_rel_line_to (cr, 0, 0);
+			cairo_move_to (cr, data[1].point.x, data[1].point.y);
+			break;
 		case CAIRO_PATH_CURVE_TO:
-	cairo_rel_line_to (cr, 0, 0);
-	cairo_move_to (cr, data[1].point.x, data[1].point.y);
-	cairo_rel_line_to (cr, 0, 0);
-	cairo_move_to (cr, data[2].point.x, data[2].point.y);
-	cairo_rel_line_to (cr, 0, 0);
-	cairo_move_to (cr, data[3].point.x, data[3].point.y);
-	break;
+			cairo_rel_line_to (cr, 0, 0);
+			cairo_move_to (cr, data[1].point.x, data[1].point.y);
+			cairo_rel_line_to (cr, 0, 0);
+			cairo_move_to (cr, data[2].point.x, data[2].point.y);
+			cairo_rel_line_to (cr, 0, 0);
+			cairo_move_to (cr, data[3].point.x, data[3].point.y);
+			break;
 		case CAIRO_PATH_CLOSE_PATH:
-	cairo_rel_line_to (cr, 0, 0);
-	break;
+			cairo_rel_line_to (cr, 0, 0);
+			break;
 		default:
-	g_assert_not_reached ();
+			g_assert_not_reached ();
 		}
 	}
 	cairo_rel_line_to (cr, 0, 0);
@@ -93,21 +95,21 @@ _fancy_cairo_stroke (cairo_t *cr, cairo_bool_t preserve)
 		data = &path->data[i];
 		switch (data->header.type) {
 		case CAIRO_PATH_MOVE_TO:
-	cairo_move_to (cr, data[1].point.x, data[1].point.y);
-	break;
+			cairo_move_to (cr, data[1].point.x, data[1].point.y);
+			break;
 		case CAIRO_PATH_LINE_TO:
-	cairo_line_to (cr, data[1].point.x, data[1].point.y);
-	break;
+			cairo_line_to (cr, data[1].point.x, data[1].point.y);
+			break;
 		case CAIRO_PATH_CURVE_TO:
-	cairo_curve_to (cr, data[1].point.x, data[1].point.y,
-					data[2].point.x, data[2].point.y,
-					data[3].point.x, data[3].point.y);
-	break;
+			cairo_curve_to (cr, data[1].point.x, data[1].point.y,
+							data[2].point.x, data[2].point.y,
+							data[3].point.x, data[3].point.y);
+			break;
 		case CAIRO_PATH_CLOSE_PATH:
-	cairo_close_path (cr);
-	break;
+			cairo_close_path (cr);
+			break;
 		default:
-	g_assert_not_reached ();
+			g_assert_not_reached ();
 		}
 	}
 	cairo_stroke (cr);
@@ -138,6 +140,24 @@ fancy_cairo_stroke_preserve (cairo_t *cr)
 	_fancy_cairo_stroke (cr, TRUE);
 }
 
+void fancy_cairo_draw_triangles(cairo_t *cr, TwistedTriangles &triangles)
+{
+	for(size_t i = 0; i < triangles.size(); i++)
+	{
+		printf("i %ld\n", i);
+		std::vector<TwistedPoint> &tri = triangles[i];
+		if(tri.size() >= 1)
+		{
+			cairo_move_to (cr, tri[0].first, tri[0].second);
+			for(size_t j=1; j < tri.size(); j++) {
+				printf("j %ld\n", j);
+				cairo_line_to (cr, tri[j].first, tri[j].second);
+			}
+			cairo_close_path (cr);
+			cairo_stroke (cr);
+		}
+	}	
+}
 
 /* Returns Euclidean distance between two points */
 static double
@@ -183,18 +203,18 @@ curve_length (double x0, double y0,
 		switch (data->header.type) {
 
 		case CAIRO_PATH_MOVE_TO:
-	current_point = data[1];
-	break;
+			current_point = data[1];
+			break;
 
 		case CAIRO_PATH_LINE_TO:
-	length += two_points_distance (&current_point, &data[1]);
-	current_point = data[1];
-	break;
+			length += two_points_distance (&current_point, &data[1]);
+			current_point = data[1];
+			break;
 
 		default:
 		case CAIRO_PATH_CURVE_TO:
 		case CAIRO_PATH_CLOSE_PATH:
-	g_assert_not_reached ();
+			g_assert_not_reached ();
 		}
 	}
 	cairo_path_destroy (path);
@@ -493,14 +513,50 @@ draw_text (cairo_t *cr,
 	g_object_unref (layout);
 }
 
+void calc_twisted_bbox(PangoRectangle &rect,
+	parametrized_path_t &param,
+	double x,
+	double y,
+	TwistedTriangles &trianglesOut)
+{
+	trianglesOut.clear();
+
+	double p1x = rect.width + rect.x + x;
+	double p1y = rect.y + y;
+	point_on_path(&param, &p1x, &p1y);
+
+	double p2x = rect.x + x;
+	double p2y = rect.y + y;
+	point_on_path(&param, &p2x, &p2y);
+
+	double p3x = rect.width + rect.x + x;
+	double p3y = rect.y + y - rect.height;
+	point_on_path(&param, &p3x, &p3y);
+
+	double p4x = rect.x + x;
+	double p4y = rect.y + y - rect.height;
+	point_on_path(&param, &p4x, &p4y);
+
+	std::vector<TwistedPoint> tri1;
+	tri1.push_back(TwistedPoint(p1x, p1y));
+	tri1.push_back(TwistedPoint(p2x, p2y));
+	tri1.push_back(TwistedPoint(p3x, p3y));
+	trianglesOut.push_back(tri1);
+
+	std::vector<TwistedPoint> tri2;
+	tri2.push_back(TwistedPoint(p2x, p2y));
+	tri2.push_back(TwistedPoint(p3x, p3y));
+	tri2.push_back(TwistedPoint(p4x, p4y));
+	trianglesOut.push_back(tri2);
+}
+
 static void
 draw_twisted (cairo_t *cr,
-				double x,
-				double y,
-				const char *font,
-				const char *text,
-	double *testx,
-	double *testy)
+	double x,
+	double y,
+	const char *font,
+	const char *text,
+	TwistedTriangles &trianglesOut)
 {
 	cairo_path_t *path;
 
@@ -534,10 +590,7 @@ draw_twisted (cairo_t *cr,
 
 	map_path_onto (cr, param);
 
-	*testx = logical_rect.width + logical_rect.x + x;
-	*testy = y;
-	point_on_path(&param, testx, testy);
-	printf("%lf %lf\n", *testx, *testy);
+	calc_twisted_bbox(logical_rect, param, x, y, trianglesOut);
 
 	cairo_path_destroy (path);
 
@@ -565,16 +618,15 @@ draw_dream (cairo_t *cr)
 
 	fancy_cairo_stroke_preserve (cr);
 
-	double testx, testy;
+	TwistedTriangles triangles;
 	draw_twisted (cr,
 		0, 0,
 		"Serif 72",
 		"It was a dream... Oh Just a dream...",
-		&testx, &testy);
+		triangles);
 
-	cairo_set_source_rgba (cr, 0.0, 1.0, 1.0, 1.0);
-	cairo_arc (cr, testx, testy, 10., 0, 2.0 * M_PI);
-	cairo_fill (cr);
+	cairo_set_source_rgba (cr, 0.5, 0.5, 0.5, 0.4);
+	fancy_cairo_draw_triangles(cr, triangles);
 }
 
 static void
@@ -590,16 +642,15 @@ draw_wow (cairo_t *cr)
 
 	fancy_cairo_stroke_preserve (cr);
 
-	double testx, testy;
+	TwistedTriangles triangles;
 	draw_twisted (cr,
 		-20, -150,
 		"Serif 60",
 		"WOW!",
-		&testx, &testy);
+		triangles);
 
-	cairo_set_source_rgba (cr, 1.0, 0.0, 0.0, 1.0);
-	cairo_arc (cr, testx, testy, 10., 0, 2.0 * M_PI);
-	cairo_fill (cr);
+	cairo_set_source_rgba (cr, 0.5, 0.5, 0.5, 0.4);
+	fancy_cairo_draw_triangles(cr, triangles);
 }
 
 int main (int argc, char **argv)
