@@ -144,13 +144,11 @@ void fancy_cairo_draw_triangles(cairo_t *cr, TwistedTriangles &triangles)
 {
 	for(size_t i = 0; i < triangles.size(); i++)
 	{
-		printf("i %ld\n", i);
 		std::vector<TwistedPoint> &tri = triangles[i];
 		if(tri.size() >= 1)
 		{
 			cairo_move_to (cr, tri[0].first, tri[0].second);
 			for(size_t j=1; j < tri.size(); j++) {
-				printf("j %ld\n", j);
 				cairo_line_to (cr, tri[j].first, tri[j].second);
 			}
 			cairo_close_path (cr);
@@ -521,33 +519,58 @@ void calc_twisted_bbox(PangoRectangle &rect,
 {
 	trianglesOut.clear();
 
-	double p1x = rect.width + rect.x + x;
-	double p1y = rect.y + y;
-	point_on_path(&param, &p1x, &p1y);
+	double stepSize = rect.height;
+	double cx = rect.x + x;
+	double prev1x = cx;
+	double prev1y = rect.y + y;
+	point_on_path(&param, &prev1x, &prev1y);
 
-	double p2x = rect.x + x;
-	double p2y = rect.y + y;
-	point_on_path(&param, &p2x, &p2y);
+	double prev2x = cx;
+	double prev2y = rect.y + y - rect.height;
+	point_on_path(&param, &prev2x, &prev2y);
 
-	double p3x = rect.width + rect.x + x;
-	double p3y = rect.y + y - rect.height;
-	point_on_path(&param, &p3x, &p3y);
+	double endX = rect.width + rect.x + x;
+	cx += stepSize;
+	bool looping = true;
+	bool finalLoop = false;
+	while(looping)
+	{
+		double p1x = cx;
+		double p1y = rect.y + y;
+		point_on_path(&param, &p1x, &p1y);
 
-	double p4x = rect.x + x;
-	double p4y = rect.y + y - rect.height;
-	point_on_path(&param, &p4x, &p4y);
+		double p2x = cx;
+		double p2y = rect.y + y - rect.height;
+		point_on_path(&param, &p2x, &p2y);
 
-	std::vector<TwistedPoint> tri1;
-	tri1.push_back(TwistedPoint(p1x, p1y));
-	tri1.push_back(TwistedPoint(p2x, p2y));
-	tri1.push_back(TwistedPoint(p3x, p3y));
-	trianglesOut.push_back(tri1);
+		std::vector<TwistedPoint> tri1;
+		tri1.push_back(TwistedPoint(prev1x, prev1y));
+		tri1.push_back(TwistedPoint(prev2x, prev2y));
+		tri1.push_back(TwistedPoint(p1x, p1y));
+		trianglesOut.push_back(tri1);
 
-	std::vector<TwistedPoint> tri2;
-	tri2.push_back(TwistedPoint(p2x, p2y));
-	tri2.push_back(TwistedPoint(p3x, p3y));
-	tri2.push_back(TwistedPoint(p4x, p4y));
-	trianglesOut.push_back(tri2);
+		std::vector<TwistedPoint> tri2;
+		tri2.push_back(TwistedPoint(prev2x, prev2y));
+		tri2.push_back(TwistedPoint(p1x, p1y));
+		tri2.push_back(TwistedPoint(p2x, p2y));
+		trianglesOut.push_back(tri2);
+
+		prev1x = p1x;
+		prev1y = p1y;
+		prev2x = p2x;
+		prev2y = p2y;
+		
+		if(finalLoop)
+			looping = false;
+		if(cx < endX && !finalLoop)
+			cx += stepSize;
+		if(cx >= endX && !finalLoop)
+		{
+			cx = endX;
+			finalLoop = true;
+		}
+	}
+
 }
 
 static void
@@ -590,7 +613,7 @@ draw_twisted (cairo_t *cr,
 
 	map_path_onto (cr, param);
 
-	calc_twisted_bbox(logical_rect, param, x, y, trianglesOut);
+	calc_twisted_bbox(ink_rect, param, x, y, trianglesOut);
 
 	cairo_path_destroy (path);
 
