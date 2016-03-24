@@ -1,13 +1,8 @@
-/* Example code to show how to use pangocairo to render text
- * projected on a path.
- * Based on https://github.com/phuang/pango/blob/master/examples/cairotwisted.c
- *
- *
- * Written by Behdad Esfahbod, 2006..2007
- *
- * Permission to use, copy, modify, distribute, and sell this example
- * for any purpose is hereby granted without fee.
- * It is provided "as is" without express or implied warranty.
+/* 
+ * Originally written by Behdad Esfahbod, 2006..2007
+ * From on https://github.com/phuang/pango/blob/master/examples/cairotwisted.c
+ * 
+ * Adapted by Tim Sheerman-Chase. See COPYING for license info.
  */
 
 #include <stdio.h>
@@ -223,7 +218,7 @@ parametrize_path (cairo_path_t *path)
   cairo_path_data_t *data, last_move_to, current_point;
   parametrization_t *parametrization;
 
-  parametrization = g_malloc (path->num_data * sizeof (parametrization[0]));
+  parametrization = (parametrization_t *)g_malloc (path->num_data * sizeof (parametrization[0]));
 
   for (i=0; i < path->num_data; i += path->data[i].header.length) {
     data = &path->data[i];
