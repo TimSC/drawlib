@@ -504,7 +504,7 @@ draw_text (cairo_t *cr,
 	cairo_move_to (cr, x, y);
 	pango_cairo_layout_line_path (cr, line);
 
-	pango_layout_get_pixel_extents (layout,
+	pango_layout_line_get_pixel_extents (line,
 		ink_rect_out,
 		logical_rect_out);
 
@@ -521,12 +521,15 @@ void calc_twisted_bbox(PangoRectangle &rect,
 
 	double stepSize = rect.height;
 	double cx = rect.x + x;
+	double y0 = rect.y + y;
+	double y1 = rect.y + y + rect.height;
+
 	double prev1x = cx;
-	double prev1y = rect.y + y;
+	double prev1y = y0;
 	point_on_path(&param, &prev1x, &prev1y);
 
 	double prev2x = cx;
-	double prev2y = rect.y + y - rect.height;
+	double prev2y = y1;
 	point_on_path(&param, &prev2x, &prev2y);
 
 	double endX = rect.width + rect.x + x;
@@ -536,11 +539,11 @@ void calc_twisted_bbox(PangoRectangle &rect,
 	while(looping)
 	{
 		double p1x = cx;
-		double p1y = rect.y + y;
+		double p1y = y0;
 		point_on_path(&param, &p1x, &p1y);
 
 		double p2x = cx;
-		double p2y = rect.y + y - rect.height;
+		double p2y = y1;
 		point_on_path(&param, &p2x, &p2y);
 
 		std::vector<TwistedPoint> tri1;
@@ -628,7 +631,7 @@ draw_twisted (cairo_t *cr,
 }
 
 static void
-draw_dream (cairo_t *cr)
+draw_zero (cairo_t *cr)
 {
 	cairo_move_to (cr, 50, 650);
 
@@ -645,7 +648,7 @@ draw_dream (cairo_t *cr)
 	draw_twisted (cr,
 		0, 0,
 		"Serif 72",
-		"It was a dream... Oh Just a dream...",
+		"I'm your lover, I'm your zero",
 		triangles);
 
 	cairo_set_source_rgba (cr, 0.5, 0.5, 0.5, 0.4);
@@ -653,9 +656,9 @@ draw_dream (cairo_t *cr)
 }
 
 static void
-draw_wow (cairo_t *cr)
+draw_pow (cairo_t *cr)
 {
-	cairo_move_to (cr, 400, 780);
+	cairo_move_to (cr, 400, 600);
 
 	cairo_rel_curve_to (cr, 50, -50, 150, -50, 200, 0);
 
@@ -667,9 +670,9 @@ draw_wow (cairo_t *cr)
 
 	TwistedTriangles triangles;
 	draw_twisted (cr,
-		-20, -150,
+		-20, -30,
 		"Serif 60",
-		"WOW!",
+		"POW!",
 		triangles);
 
 	cairo_set_source_rgba (cr, 0.5, 0.5, 0.5, 0.4);
@@ -698,8 +701,10 @@ int main (int argc, char **argv)
 	cairo_set_source_rgb (cr, 1.0, 1.0, 1.0);
 	cairo_paint (cr);
 
-	draw_dream (cr);
-	draw_wow (cr);
+	printf("zero\n");
+	draw_zero (cr);
+	printf("pow\n");
+	draw_pow (cr);
 	cairo_surface_flush(surface);
 
 	cairo_destroy (cr);
