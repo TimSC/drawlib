@@ -12,6 +12,7 @@
 #include <stdlib.h>
 #include <pango/pangocairo.h>
 #include <vector>
+#include <stdexcept>
 
 void fancy_cairo_stroke (cairo_t *cr);
 void fancy_cairo_stroke_preserve (cairo_t *cr);
@@ -645,6 +646,18 @@ typedef std::pair<TwistedCurveCmdType, std::vector<double> > TwistedCurveCmd;
 
 TwistedCurveCmd NewTwistedCurveCmd(TwistedCurveCmdType ty, int n_args, ...)
 {
+
+	switch(ty)
+	{
+	case CurveTo:
+	case RelCurveTo:
+		if(n_args != 6) throw std::invalid_argument("Incorrect number of arguments");
+		break;
+	default:
+		if(n_args != 2) throw std::invalid_argument("Incorrect number of arguments");		
+		break;
+	}
+
 	va_list ap;
 	va_start(ap, n_args);
 	std::vector<double> vals;
