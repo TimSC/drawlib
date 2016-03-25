@@ -3,6 +3,8 @@
  * From on https://github.com/phuang/pango/blob/master/examples/cairotwisted.c
  * 
  * Adapted by Tim Sheerman-Chase. See LICENSE for license info.
+ *
+ * g++ cairotwisted.cpp -lm  -lcairo `pkg-config --cflags --libs gtk+-2.0` -o twisted
  */
 
 #include <stdio.h>
@@ -630,14 +632,61 @@ draw_twisted (cairo_t *cr,
 	cairo_restore (cr);
 }
 
-static void
-draw_zero (cairo_t *cr)
+enum TwistedCurveCmdType
 {
-	cairo_move_to (cr, 50, 650);
+	MoveTo,
+	LineTo,
+	RelLineTo,
+	CurveTo,
+	RelCurveTo
+};
 
-	cairo_rel_line_to (cr, 250, 50);
-	cairo_rel_curve_to (cr, 250, 50, 600, -50, 600, -250);
-	cairo_rel_curve_to (cr, 0, -400, -300, -100, -800, -300);
+typedef std::pair<TwistedCurveCmdType, std::vector<double> > TwistedCurveCmd;
+
+TwistedCurveCmd NewTwistedCurveCmd(TwistedCurveCmdType ty, int n_args, ...)
+{
+	va_list ap;
+	va_start(ap, n_args);
+	std::vector<double> vals;
+	for(int i=0;i < n_args;i++)
+		vals.push_back(va_arg(ap, double));
+	va_end(ap);
+	return TwistedCurveCmd(ty, vals);
+}
+
+void RunTwistedCurveCmds(cairo_t *cr, const std::vector<TwistedCurveCmd> &cmds)
+{
+	for(size_t i = 0; i < cmds.size(); i++)
+	{
+		TwistedCurveCmd cmd = cmds[i];
+		const std::vector<double> &vals = cmd.second;
+		switch(cmd.first)
+		{
+		case MoveTo:
+			cairo_move_to (cr, vals[0], vals[1]);
+			break;
+		case LineTo:
+			cairo_line_to (cr, vals[0], vals[1]);
+			break;
+		case RelLineTo:
+			cairo_rel_line_to (cr, vals[0], vals[1]);
+			break;
+		case CurveTo:
+			cairo_curve_to (cr, vals[0], vals[1], vals[2], vals[3], vals[4], vals[5]);
+			break;
+		case RelCurveTo:
+			cairo_rel_curve_to (cr, vals[0], vals[1], vals[2], vals[3], vals[4], vals[5]);
+			break;
+		}
+
+	}
+
+}
+
+static void
+draw_zero (cairo_t *cr, const std::vector<TwistedCurveCmd> &cmds)
+{
+	RunTwistedCurveCmds(cr, cmds);
 
 	cairo_set_line_width (cr, 1.5);
 	cairo_set_source_rgba (cr, 0.3, 0.3, 1.0, 0.3);
@@ -656,13 +705,10 @@ draw_zero (cairo_t *cr)
 }
 
 static void
-draw_pow (cairo_t *cr)
+draw_pow (cairo_t *cr, const std::vector<TwistedCurveCmd> &cmds)
 {
-	cairo_move_to (cr, 400, 600);
+	RunTwistedCurveCmds(cr, cmds);
 
-	cairo_rel_curve_to (cr, 50, -50, 150, -50, 200, 0);
-
-	cairo_scale (cr, 1.0, 2.0);
 	cairo_set_line_width (cr, 2.0);
 	cairo_set_source_rgba (cr, 0.3, 1.0, 0.3, 1.0);
 
@@ -702,9 +748,18 @@ int main (int argc, char **argv)
 	cairo_paint (cr);
 
 	printf("zero\n");
-	draw_zero (cr);
+	std::vector<TwistedCurveCmd> zeroCmds;
+	zeroCmds.push_back(NewTwistedCurveCmd(MoveTo, 2, 50.0, 650.0));
+	zeroCmds.push_back(NewTwistedCurveCmd(RelLineTo, 2, 250.0, 50.0));
+	zeroCmds.push_back(NewTwistedCurveCmd(RelCurveTo, 6, 250.0, 50.0, 600.0, -50.0, 600.0, -250.0));
+	zeroCmds.push_back(NewTwistedCurveCmd(RelCurveTo, 6, 0.0, -400.0, -300.0, -100.0, -800.0, -300.0));
+	draw_zero (cr, zeroCmds);
+
 	printf("pow\n");
-	draw_pow (cr);
+	std::vector<TwistedCurveCmd> powCmds;
+	powCmds.push_back(NewTwistedCurveCmd(MoveTo, 2, 400.0, 600.0));
+	powCmds.push_back(NewTwistedCurveCmd(RelCurveTo, 6, 50.0, -50.0, 150.0, -50.0, 200.0, 0.0));
+	draw_pow (cr, powCmds);
 	cairo_surface_flush(surface);
 
 	cairo_destroy (cr);
