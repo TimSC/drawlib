@@ -1,6 +1,6 @@
 /* 
  * Originally written by Behdad Esfahbod, 2006..2007
- * From on https://github.com/phuang/pango/blob/master/examples/cairotwisted.c
+ * From https://github.com/phuang/pango/blob/master/examples/cairotwisted.c
  * 
  * Adapted by Tim Sheerman-Chase. See LICENSE for license info.
  *
@@ -11,13 +11,12 @@
 #include <math.h>
 #include <stdlib.h>
 #include <pango/pangocairo.h>
-#include <vector>
 #include <stdexcept>
+#include "drawlib.h"
+#include "cairotwisted.h"
 
 void fancy_cairo_stroke (cairo_t *cr);
 void fancy_cairo_stroke_preserve (cairo_t *cr);
-typedef std::pair<double, double> TwistedPoint;
-typedef std::vector<std::vector<TwistedPoint> > TwistedTriangles;
 
 /* A fancy cairo_stroke[_preserve]() that draws points and control
  * points, and connects them together.
@@ -147,7 +146,7 @@ void fancy_cairo_draw_triangles(cairo_t *cr, TwistedTriangles &triangles)
 {
 	for(size_t i = 0; i < triangles.size(); i++)
 	{
-		std::vector<TwistedPoint> &tri = triangles[i];
+		std::vector<Point> &tri = triangles[i];
 		if(tri.size() >= 1)
 		{
 			cairo_move_to (cr, tri[0].first, tri[0].second);
@@ -549,16 +548,16 @@ void calc_twisted_bbox(PangoRectangle &rect,
 		double p2y = y1;
 		point_on_path(&param, &p2x, &p2y);
 
-		std::vector<TwistedPoint> tri1;
-		tri1.push_back(TwistedPoint(prev1x, prev1y));
-		tri1.push_back(TwistedPoint(prev2x, prev2y));
-		tri1.push_back(TwistedPoint(p1x, p1y));
+		std::vector<Point> tri1;
+		tri1.push_back(Point(prev1x, prev1y));
+		tri1.push_back(Point(prev2x, prev2y));
+		tri1.push_back(Point(p1x, p1y));
 		trianglesOut.push_back(tri1);
 
-		std::vector<TwistedPoint> tri2;
-		tri2.push_back(TwistedPoint(prev2x, prev2y));
-		tri2.push_back(TwistedPoint(p1x, p1y));
-		tri2.push_back(TwistedPoint(p2x, p2y));
+		std::vector<Point> tri2;
+		tri2.push_back(Point(prev2x, prev2y));
+		tri2.push_back(Point(p1x, p1y));
+		tri2.push_back(Point(p2x, p2y));
 		trianglesOut.push_back(tri2);
 
 		prev1x = p1x;
@@ -633,40 +632,6 @@ draw_twisted (cairo_t *cr,
 	cairo_restore (cr);
 }
 
-enum TwistedCurveCmdType
-{
-	MoveTo,
-	LineTo,
-	RelLineTo,
-	CurveTo,
-	RelCurveTo
-};
-
-typedef std::pair<TwistedCurveCmdType, std::vector<double> > TwistedCurveCmd;
-
-TwistedCurveCmd NewTwistedCurveCmd(TwistedCurveCmdType ty, int n_args, ...)
-{
-
-	switch(ty)
-	{
-	case CurveTo:
-	case RelCurveTo:
-		if(n_args != 6) throw std::invalid_argument("Incorrect number of arguments");
-		break;
-	default:
-		if(n_args != 2) throw std::invalid_argument("Incorrect number of arguments");		
-		break;
-	}
-
-	va_list ap;
-	va_start(ap, n_args);
-	std::vector<double> vals;
-	for(int i=0;i < n_args;i++)
-		vals.push_back(va_arg(ap, double));
-	va_end(ap);
-	return TwistedCurveCmd(ty, vals);
-}
-
 void RunTwistedCurveCmds(cairo_t *cr, const std::vector<TwistedCurveCmd> &cmds)
 {
 	for(size_t i = 0; i < cmds.size(); i++)
@@ -717,8 +682,7 @@ draw_zero (cairo_t *cr, const std::vector<TwistedCurveCmd> &cmds)
 	fancy_cairo_draw_triangles(cr, triangles);
 }
 
-static void
-draw_pow (cairo_t *cr, const std::vector<TwistedCurveCmd> &cmds)
+void draw_pow (cairo_t *cr, const std::string &text, const std::vector<TwistedCurveCmd> &cmds)
 {
 	RunTwistedCurveCmds(cr, cmds);
 
@@ -731,13 +695,13 @@ draw_pow (cairo_t *cr, const std::vector<TwistedCurveCmd> &cmds)
 	draw_twisted (cr,
 		-20, -30,
 		"Serif 60",
-		"POW!",
+		text.c_str(),
 		triangles);
 
 	cairo_set_source_rgba (cr, 0.5, 0.5, 0.5, 0.4);
 	fancy_cairo_draw_triangles(cr, triangles);
 }
-
+/*
 int main (int argc, char **argv)
 {
 	cairo_t *cr;
@@ -788,4 +752,4 @@ int main (int argc, char **argv)
 
 	return 0;
 }
-
+*/

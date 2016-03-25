@@ -15,6 +15,7 @@ protected:
 	virtual void DrawCmdPolygons(class DrawPolygonsCmd &polygons);
 	virtual void DrawCmdLines(class DrawLinesCmd &linesCmd);
 	virtual void DrawCmdText(class DrawTextCmd &textCmd);
+	virtual void DrawCmdTwistedText(class DrawTwistedTextCmd &textCmd);
 
 	void CreateMaskSurface(double width, double height);
 public:
@@ -34,6 +35,7 @@ class DrawLibCairoPango : public DrawLibCairo
 {
 protected:
 	void DrawCmdText(class DrawTextCmd &textCmd);
+	void DrawCmdTwistedText(class DrawTwistedTextCmd &textCmd);
 
 public:
 	DrawLibCairoPango(cairo_surface_t *surface);

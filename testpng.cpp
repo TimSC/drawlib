@@ -102,13 +102,20 @@ void DrawTestPatterns(class IDrawLib *drawLib)
 	textStrs.push_back(label5);
 	drawLib->AddDrawTextCmd(textStrs, properties);
 
+	std::vector<class TwistedTextLabel> twistedTextStrs;
+	std::vector<TwistedCurveCmd> pathCmds;
+	pathCmds.push_back(NewTwistedCurveCmd(MoveTo, 2, 320.0, 100.0));
+	pathCmds.push_back(NewTwistedCurveCmd(RelCurveTo, 6, 50.0, -50.0, 150.0, -50.0, 200.0, 0.0));
+	twistedTextStrs.push_back(TwistedTextLabel("Woj!", pathCmds));
+	drawLib->AddDrawTwistedTextCmd(twistedTextStrs, properties);
+
 	drawLib->Draw();
 
 }
 
 int main(void)
 {
-	cairo_surface_t *surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, 320, 240);
+	cairo_surface_t *surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, 640, 240);
 	class DrawLibCairoPango drawlib(surface);
 	//class DrawLibCairo drawlib(surface);
 	

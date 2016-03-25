@@ -9,6 +9,7 @@ typedef std::pair<double, double> Point;
 typedef std::vector<Point> Contour;
 typedef std::vector<Contour> Contours;
 typedef std::pair<Contour, Contours> Polygon;
+typedef std::vector<std::vector<Point> > TwistedTriangles;
 
 ///Enumeration of allowed command types
 enum CmdTypes
@@ -17,7 +18,20 @@ enum CmdTypes
 	CMD_POLYGONS,
 	CMD_LINES,
 	CMD_TEXT,
+	CMD_TWISTED_TEXT,
 };
+
+enum TwistedCurveCmdType
+{
+	MoveTo,
+	LineTo,
+	RelLineTo,
+	CurveTo,
+	RelCurveTo
+};
+
+typedef std::pair<TwistedCurveCmdType, std::vector<double> > TwistedCurveCmd;
+TwistedCurveCmd NewTwistedCurveCmd(TwistedCurveCmdType ty, int n_args, ...);
 
 ///Drawing properties of shapes that are filled
 class ShapeProperties
@@ -83,6 +97,20 @@ public:
 	virtual ~TextLabel();
 };
 
+///Defines a single twisted label that follows a Bezier path
+class TwistedTextLabel
+{
+public:
+	std::string text;
+	std::vector<TwistedCurveCmd> path; //Path of bottom edge
+
+	TwistedTextLabel();
+	TwistedTextLabel(std::string &text, const std::vector<TwistedCurveCmd> &path);
+	TwistedTextLabel(const char *text, const std::vector<TwistedCurveCmd> &path);
+	TwistedTextLabel(const TwistedTextLabel &arg);
+	virtual ~TwistedTextLabel();
+};
+
 ///Base class of all command classes
 class BaseCmd
 {
@@ -133,6 +161,19 @@ public:
 	virtual BaseCmd *Clone();
 };
 
+///Draw twisted text command
+class DrawTwistedTextCmd : public BaseCmd
+{
+public:
+	const std::vector<class TwistedTextLabel> textStrs;
+	const class TextProperties properties;
+
+	DrawTwistedTextCmd(const std::vector<class TwistedTextLabel> &textStrs, const class TextProperties &properties);
+	DrawTwistedTextCmd(const DrawTwistedTextCmd &arg);
+	virtual ~DrawTwistedTextCmd();
+	virtual BaseCmd *Clone();
+};
+
 ///Abstract base class of drawing library
 class IDrawLib
 {
@@ -145,6 +186,7 @@ public:
 	virtual void AddDrawPolygonsCmd(const std::vector<Polygon> &polygons, const class ShapeProperties &properties) = 0;
 	virtual void AddDrawLinesCmd(const Contours &lines, const class LineProperties &properties) = 0;
 	virtual void AddDrawTextCmd(const std::vector<class TextLabel> &textStrs, const class TextProperties &properties) = 0;
+	virtual void AddDrawTwistedTextCmd(const std::vector<class TwistedTextLabel> &textStrs, const class TextProperties &properties) = 0;
 	virtual int GetTextExtents(const char *textStr, const class TextProperties &properties, 
 		double &width, double &height) = 0;
 	virtual int GetDrawableExtents(double &x1,
@@ -169,6 +211,7 @@ public:
 	void AddDrawPolygonsCmd(const std::vector<Polygon> &polygons, const class ShapeProperties &properties);
 	void AddDrawLinesCmd(const Contours &lines, const class LineProperties &properties);
 	void AddDrawTextCmd(const std::vector<class TextLabel> &textStrs, const class TextProperties &properties);
+	void AddDrawTwistedTextCmd(const std::vector<class TwistedTextLabel> &textStrs, const class TextProperties &properties);
 	int GetTextExtents(const char *textStr, const class TextProperties &properties, 
 		double &width, double &height);
 };

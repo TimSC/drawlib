@@ -4,6 +4,7 @@
 #include <cmath>
 #include <stdexcept>
 #include <iostream>
+#include "cairotwisted.h"
 using namespace std;
 
 DrawLibCairo::DrawLibCairo(cairo_surface_t *surface): LocalStore(),
@@ -34,6 +35,9 @@ void DrawLibCairo::Draw()
 			break;
 		case CMD_TEXT:
 			DrawCmdText(*(class DrawTextCmd *)baseCmd);
+			break;
+		case CMD_TWISTED_TEXT:
+			DrawCmdTwistedText(*(class DrawTwistedTextCmd *)baseCmd);
 			break;
 		}
 
@@ -224,6 +228,11 @@ void DrawLibCairo::DrawCmdText(class DrawTextCmd &textCmd)
 	cairo_restore(this->cr);
 }
 
+void DrawLibCairo::DrawCmdTwistedText(class DrawTwistedTextCmd &textCmd)
+{
+	throw std::runtime_error("Not implemented");
+}
+
 int DrawLibCairo::GetTextExtents(const char *textStr, const class TextProperties &properties, 
 		double &width, double &height)
 {
@@ -308,6 +317,15 @@ void DrawLibCairoPango::DrawCmdText(class DrawTextCmd &textCmd)
 	pango_font_description_free (desc);
 
 	cairo_restore(this->cr);
+}
+
+void DrawLibCairoPango::DrawCmdTwistedText(class DrawTwistedTextCmd &textCmd)
+{
+	for(size_t i=0; i< textCmd.textStrs.size(); i++)
+	{
+		const class TwistedTextLabel &tl = textCmd.textStrs[i];
+		draw_pow (this->cr, tl.text, tl.path);
+	}
 }
 
 int DrawLibCairoPango::GetTextExtents(const char *textStr, const class TextProperties &properties, 

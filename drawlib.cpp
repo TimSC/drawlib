@@ -1,5 +1,7 @@
 #include <stdlib.h>
 #include <iostream>
+#include <stdexcept>
+#include <stdarg.h>
 #include "drawlib.h"
 using namespace std;
 
@@ -128,6 +130,24 @@ TextLabel::~TextLabel()
 
 // *************************************
 
+TwistedTextLabel::TwistedTextLabel()
+{}
+
+TwistedTextLabel::TwistedTextLabel(std::string &text, const std::vector<TwistedCurveCmd> &path): text(text), path(path)
+{}
+
+TwistedTextLabel::TwistedTextLabel(const char *text, const std::vector<TwistedCurveCmd> &path): text(text), path(path)
+{}
+
+TwistedTextLabel::TwistedTextLabel(const TwistedTextLabel &arg):
+	text(arg.text), path(arg.path)
+{}
+
+TwistedTextLabel::~TwistedTextLabel()
+{}
+
+// *************************************
+
 BaseCmd::BaseCmd(CmdTypes type): type(type)
 {}
 
@@ -179,6 +199,20 @@ DrawTextCmd::~DrawTextCmd()
 BaseCmd *DrawTextCmd::Clone()
 {return new class DrawTextCmd(*this);}
 
+DrawTwistedTextCmd::DrawTwistedTextCmd(const std::vector<class TwistedTextLabel> &textStrs, const class TextProperties &properties) : 
+	BaseCmd(CMD_TWISTED_TEXT), textStrs(textStrs), properties(properties) 
+{}
+
+DrawTwistedTextCmd::DrawTwistedTextCmd(const DrawTwistedTextCmd &arg):
+	BaseCmd(CMD_TWISTED_TEXT), textStrs(arg.textStrs), properties(arg.properties)
+{}
+
+DrawTwistedTextCmd::~DrawTwistedTextCmd()
+{}
+
+BaseCmd *DrawTwistedTextCmd::Clone()
+{return new class DrawTwistedTextCmd(*this);}
+
 // *************************************
 
 LocalStore::LocalStore() : IDrawLib()
@@ -222,11 +256,43 @@ void LocalStore::AddDrawTextCmd(const std::vector<class TextLabel> &textStrs, co
 	this->AddCmd(&cmd);
 }
 
+void LocalStore::AddDrawTwistedTextCmd(const std::vector<class TwistedTextLabel> &textStrs, const class TextProperties &properties)
+{
+	class DrawTwistedTextCmd cmd(textStrs, properties);
+	this->AddCmd(&cmd);
+}
+
 int LocalStore::GetTextExtents(const char *textStr, const class TextProperties &properties, 
 		double &width, double &height)
 {
 	width = -1.0;
 	height = -1.0;
 	return -1;
+}
+
+// ****************************************
+
+///Convenience factory to create a curve command
+TwistedCurveCmd NewTwistedCurveCmd(TwistedCurveCmdType ty, int n_args, ...)
+{
+
+	switch(ty)
+	{
+	case CurveTo:
+	case RelCurveTo:
+		if(n_args != 6) throw std::invalid_argument("Incorrect number of arguments");
+		break;
+	default:
+		if(n_args != 2) throw std::invalid_argument("Incorrect number of arguments");		
+		break;
+	}
+
+	va_list ap;
+	va_start(ap, n_args);
+	std::vector<double> vals;
+	for(int i=0;i < n_args;i++)
+		vals.push_back(va_arg(ap, double));
+	va_end(ap);
+	return TwistedCurveCmd(ty, vals);
 }
 
