@@ -296,7 +296,7 @@ transform_path (cairo_path_t *path, transform_point_func_t f, void *closure)
 		case CAIRO_PATH_CLOSE_PATH:
 			break;
 		default:
-	g_assert_not_reached ();
+			g_assert_not_reached ();
 		}
 	}
 }
@@ -582,6 +582,7 @@ draw_twisted (cairo_t *cr,
 	const char *text,
 	bool doDrawing,
 	bool doTriangles,
+	const class TextProperties &properties,
 	TwistedTriangles &trianglesOut)
 {
 	cairo_path_t *path;
@@ -614,7 +615,8 @@ draw_twisted (cairo_t *cr,
 	param.path = path;
 	parametrize_path (path, param.parametrization);
 
-	map_path_onto (cr, param);
+	if(doDrawing)
+		map_path_onto (cr, param);
 
 	if(doTriangles)
 		calc_twisted_bbox(ink_rect, param, x, y, trianglesOut);
@@ -623,14 +625,9 @@ draw_twisted (cairo_t *cr,
 
 	cairo_path_destroy (path);
 
-	if(doDrawing)
+	if(doDrawing && !properties.outline)
 	{
-		cairo_fill_preserve (cr);
-
-		cairo_save (cr);
-		cairo_set_source_rgb (cr, 0.1, 0.1, 0.1);
-		cairo_stroke (cr);
-		cairo_restore (cr);
+		cairo_fill (cr);
 	}
 	cairo_restore (cr);
 }
@@ -684,8 +681,9 @@ void draw_formatted_twisted_text (cairo_t *cr, const std::string &text, const st
 		0, 0,
 		desc,
 		text.c_str(),
-		false,
 		true,
+		false,
+		properties,
 		triangles);
 
 	pango_font_description_free (desc);
