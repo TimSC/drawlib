@@ -248,9 +248,10 @@ void DrawLibCairo::DrawCmdTwistedText(class DrawTwistedTextCmd &textCmd)
 	throw std::runtime_error("Not implemented");
 }
 
-int DrawLibCairo::GetTextExtents(const char *textStr, const class TextProperties &properties, 
-		double &width, double &height)
+int DrawLibCairo::GetTriangleBoundsText(const TextLabel &label, const class TextProperties &properties, 
+		TwistedTriangles &trianglesOut)
 {
+	trianglesOut.clear();
 	cairo_save (this->cr);
 	cairo_set_font_size(cr, properties.fontSize);
 	cairo_select_font_face(cr, properties.font.c_str(), CAIRO_FONT_SLANT_NORMAL,
@@ -258,11 +259,24 @@ int DrawLibCairo::GetTextExtents(const char *textStr, const class TextProperties
 
 	cairo_text_extents_t extents;
 	cairo_text_extents (cr,
-                textStr,
+                label.text.c_str(),
                 &extents);
-	width = extents.width;
-	height = extents.height;
+	double width = extents.width;
+	double height = extents.height;
 	cairo_restore(this->cr);
+
+	std::vector<Point> tri1;
+	tri1.push_back(Point(label.x, label.y));
+	tri1.push_back(Point(label.x+width, label.y));
+	tri1.push_back(Point(label.x, label.y+height));
+	trianglesOut.push_back(tri1);
+
+	std::vector<Point> tri2;
+	tri2.push_back(Point(label.x, label.y+height));
+	tri2.push_back(Point(label.x+width, label.y));
+	tri2.push_back(Point(label.x+width, label.y+height));
+	trianglesOut.push_back(tri2);
+
 	return 0;
 }
 
@@ -357,15 +371,16 @@ void DrawLibCairoPango::DrawCmdTwistedText(class DrawTwistedTextCmd &textCmd)
 	}
 }
 
-int DrawLibCairoPango::GetTextExtents(const char *textStr, const class TextProperties &properties, 
-		double &width, double &height)
+int DrawLibCairoPango::GetTriangleBoundsText(const TextLabel &label, const class TextProperties &properties, 
+		TwistedTriangles &trianglesOut)
 {
+	trianglesOut.clear();
 	PangoFontDescription *desc = pango_font_description_from_string (properties.font.c_str());
 	pango_font_description_set_size (desc, round(properties.fontSize * PANGO_SCALE));
 
 	PangoLayout *layout = pango_cairo_create_layout (this->cr);
 
-	pango_layout_set_text (layout, textStr, -1);
+	pango_layout_set_text (layout, label.text.c_str(), -1);
 	pango_layout_set_font_description (layout, desc);
 
 	PangoRectangle ink_rect;
@@ -374,12 +389,28 @@ int DrawLibCairoPango::GetTextExtents(const char *textStr, const class TextPrope
                             &ink_rect,
                             &logical_rect);
 
-	width = logical_rect.width;
-	height = logical_rect.height;
+	double width = logical_rect.width;
+	double height = logical_rect.height;
 
 	g_object_unref (layout);
 
 	pango_font_description_free (desc);
+
+	std::vector<Point> tri1;
+	tri1.push_back(Point(label.x, label.y));
+	tri1.push_back(Point(label.x+width, label.y));
+	tri1.push_back(Point(label.x, label.y+height));
+	trianglesOut.push_back(tri1);
+
+	std::vector<Point> tri2;
+	tri2.push_back(Point(label.x, label.y+height));
+	tri2.push_back(Point(label.x+width, label.y));
+	tri2.push_back(Point(label.x+width, label.y+height));
+	trianglesOut.push_back(tri2);
+
+	cairo_set_source_rgba (this->cr, 0.5, 0.5, 0.5, 0.4);
+	fancy_cairo_draw_triangles(this->cr, trianglesOut);
+
 	return 0;
 }
 

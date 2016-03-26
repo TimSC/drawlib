@@ -189,8 +189,8 @@ public:
 	virtual void AddDrawLinesCmd(const Contours &lines, const class LineProperties &properties) = 0;
 	virtual void AddDrawTextCmd(const std::vector<class TextLabel> &textStrs, const class TextProperties &properties) = 0;
 	virtual void AddDrawTwistedTextCmd(const std::vector<class TwistedTextLabel> &textStrs, const class TextProperties &properties) = 0;
-	virtual int GetTextExtents(const char *textStr, const class TextProperties &properties, 
-		double &width, double &height) = 0;
+	virtual int GetTriangleBoundsText(const TextLabel &label, const class TextProperties &properties, 
+		TwistedTriangles &trianglesOut) = 0;
 	virtual int GetTriangleBoundsTwistedText(const TwistedTextLabel &label, 
 		const class TextProperties &properties, 
 		TwistedTriangles &trianglesOut) = 0;
@@ -218,8 +218,8 @@ public:
 	void AddDrawLinesCmd(const Contours &lines, const class LineProperties &properties);
 	void AddDrawTextCmd(const std::vector<class TextLabel> &textStrs, const class TextProperties &properties);
 	void AddDrawTwistedTextCmd(const std::vector<class TwistedTextLabel> &textStrs, const class TextProperties &properties);
-	int GetTextExtents(const char *textStr, const class TextProperties &properties, 
-		double &width, double &height);
+	int GetTriangleBoundsText(const TextLabel &label, const class TextProperties &properties, 
+		TwistedTriangles &trianglesOut);
 	int GetTriangleBoundsTwistedText(const TwistedTextLabel &label, 
 		const class TextProperties &properties, 
 		TwistedTriangles &trianglesOut);

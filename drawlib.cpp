@@ -276,11 +276,10 @@ void LocalStore::AddDrawTwistedTextCmd(const std::vector<class TwistedTextLabel>
 	this->AddCmd(&cmd);
 }
 
-int LocalStore::GetTextExtents(const char *textStr, const class TextProperties &properties, 
-		double &width, double &height)
+int LocalStore::GetTriangleBoundsText(const TextLabel &label, const class TextProperties &properties, 
+		TwistedTriangles &trianglesOut)
 {
-	width = -1.0;
-	height = -1.0;
+	trianglesOut.clear();
 	return -1;
 }
 

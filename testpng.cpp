@@ -43,8 +43,7 @@ void DrawTestPatterns(class IDrawLib *drawLib)
 
 	//Text labels
 	std::vector<class TextLabel> textStrs;
-
-	double width = 0.0, height = 0.0;
+	TwistedTriangles triangles;
 	const char *hello = "Hello";
 	const char *arabic = "السلام عليكم";
 	class TextLabel label(hello, 60.0, 50.0);
@@ -52,12 +51,10 @@ void DrawTestPatterns(class IDrawLib *drawLib)
 
 	class TextProperties properties;
 	properties.fontSize = 30.0;
-	drawLib->GetTextExtents(hello, properties, 
-		width, height);
-	cout << "text w: "<< width << ", h: " << height << endl;
-	drawLib->GetTextExtents(arabic, properties, 
-		width, height);
-	cout << "text2 w: "<< width << ", h: " << height << endl;
+	drawLib->GetTriangleBoundsText(label, properties, 
+		triangles);
+	drawLib->GetTriangleBoundsText(interlLabel, properties, 
+		triangles);
 	textStrs.push_back(label);
 	textStrs.push_back(interlLabel);
 	drawLib->AddDrawTextCmd(textStrs, properties);
@@ -103,6 +100,9 @@ void DrawTestPatterns(class IDrawLib *drawLib)
 	textStrs.push_back(label5);
 	drawLib->AddDrawTextCmd(textStrs, properties);
 
+	drawLib->GetTriangleBoundsText(label4, properties, 
+		triangles);
+
 	//Twisted text
 	std::vector<class TwistedTextLabel> twistedTextStrs;
 	std::vector<TwistedCurveCmd> pathCmds;
@@ -112,7 +112,6 @@ void DrawTestPatterns(class IDrawLib *drawLib)
 	drawLib->AddDrawTwistedTextCmd(twistedTextStrs, properties2);
 
 	//Test triangles for twisted text
-	TwistedTriangles triangles;
 	drawLib->GetTriangleBoundsTwistedText(TwistedTextLabel("Woj!", pathCmds),
 		properties2, 
 		triangles);

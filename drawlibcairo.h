@@ -23,8 +23,8 @@ public:
 	virtual ~DrawLibCairo();
 
 	void Draw();
-	int GetTextExtents(const char *textStr, const class TextProperties &properties, 
-		double &width, double &height);
+	int GetTriangleBoundsText(const TextLabel &label, const class TextProperties &properties, 
+		TwistedTriangles &trianglesOut);
 	int GetDrawableExtents(double &x1,
 		double &y1,
 		double &x2,
@@ -41,8 +41,8 @@ public:
 	DrawLibCairoPango(cairo_surface_t *surface);
 	virtual ~DrawLibCairoPango();
 
-	int GetTextExtents(const char *textStr, const class TextProperties &properties, 
-		double &width, double &height);
+	int GetTriangleBoundsText(const TextLabel &label, const class TextProperties &properties, 
+		TwistedTriangles &trianglesOut);
 	int GetTriangleBoundsTwistedText(const TwistedTextLabel &label, 
 		const class TextProperties &properties, 
 		TwistedTriangles &trianglesOut);
