@@ -321,10 +321,11 @@ void DrawLibCairoPango::DrawCmdText(class DrawTextCmd &textCmd)
 
 void DrawLibCairoPango::DrawCmdTwistedText(class DrawTwistedTextCmd &textCmd)
 {
+	const class TextProperties &properties = textCmd.properties;
 	for(size_t i=0; i< textCmd.textStrs.size(); i++)
 	{
 		const class TwistedTextLabel &tl = textCmd.textStrs[i];
-		draw_pow (this->cr, tl.text, tl.path);
+		draw_formatted_twisted_text (this->cr, tl.text, tl.path, properties);
 	}
 }
 

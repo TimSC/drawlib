@@ -4,7 +4,6 @@
  * 
  * Adapted by Tim Sheerman-Chase. See LICENSE for license info.
  *
- * g++ cairotwisted.cpp -lm  -lcairo `pkg-config --cflags --libs gtk+-2.0` -o twisted
  */
 
 #include <stdio.h>
@@ -472,14 +471,13 @@ static void
 draw_text (cairo_t *cr,
 		 double x,
 		 double y,
-		 const char *font,
 		 const char *text,
+		 PangoFontDescription *desc,
 		 PangoRectangle *ink_rect_out,
 		 PangoRectangle *logical_rect_out)
 {
 	PangoLayout *layout;
 	PangoLayoutLine *line;
-	PangoFontDescription *desc;
 	cairo_font_options_t *font_options;
 
 	font_options = cairo_font_options_create ();
@@ -492,9 +490,7 @@ draw_text (cairo_t *cr,
 
 	layout = pango_cairo_create_layout (cr);
 
-	desc = pango_font_description_from_string (font);
 	pango_layout_set_font_description (layout, desc);
-	pango_font_description_free (desc);
 
 	pango_layout_set_text (layout, text, -1);
 
@@ -582,7 +578,7 @@ static void
 draw_twisted (cairo_t *cr,
 	double x,
 	double y,
-	const char *font,
+	PangoFontDescription *desc,
 	const char *text,
 	TwistedTriangles &trianglesOut)
 {
@@ -608,7 +604,7 @@ draw_twisted (cairo_t *cr,
 
 	PangoRectangle ink_rect;
 	PangoRectangle logical_rect;
-	draw_text (cr, x, y, font, text, &ink_rect, &logical_rect);
+	draw_text (cr, x, y, text, desc, &ink_rect, &logical_rect);
 	printf("ink %d %d %d %d\n", ink_rect.x, ink_rect.y, ink_rect.width, ink_rect.height);
 	printf("logical %d %d %d %d\n", logical_rect.x, logical_rect.y, logical_rect.width, logical_rect.height);
 
@@ -661,95 +657,31 @@ void RunTwistedCurveCmds(cairo_t *cr, const std::vector<TwistedCurveCmd> &cmds)
 
 }
 
-static void
-draw_zero (cairo_t *cr, const std::vector<TwistedCurveCmd> &cmds)
+void draw_formatted_twisted_text (cairo_t *cr, const std::string &text, const std::vector<TwistedCurveCmd> &cmds,
+	const class TextProperties &properties)
 {
+	cairo_save (cr);
 	RunTwistedCurveCmds(cr, cmds);
 
-	cairo_set_line_width (cr, 1.5);
-	cairo_set_source_rgba (cr, 0.3, 0.3, 1.0, 0.3);
+	cairo_set_line_width (cr, properties.lineWidth);
+	cairo_set_source_rgba (cr, properties.r, properties.g, properties.b, properties.a);
 
-	fancy_cairo_stroke_preserve (cr);
+	//fancy_cairo_stroke_preserve (cr);
+
+	PangoFontDescription *desc = pango_font_description_from_string (properties.font.c_str());
+	pango_font_description_set_size (desc, round(properties.fontSize * PANGO_SCALE));
 
 	TwistedTriangles triangles;
 	draw_twisted (cr,
 		0, 0,
-		"Serif 72",
-		"I'm your lover, I'm your zero",
-		triangles);
-
-	cairo_set_source_rgba (cr, 0.5, 0.5, 0.5, 0.4);
-	fancy_cairo_draw_triangles(cr, triangles);
-}
-
-void draw_pow (cairo_t *cr, const std::string &text, const std::vector<TwistedCurveCmd> &cmds)
-{
-	RunTwistedCurveCmds(cr, cmds);
-
-	cairo_set_line_width (cr, 2.0);
-	cairo_set_source_rgba (cr, 0.3, 1.0, 0.3, 1.0);
-
-	fancy_cairo_stroke_preserve (cr);
-
-	TwistedTriangles triangles;
-	draw_twisted (cr,
-		-20, -30,
-		"Serif 60",
+		desc,
 		text.c_str(),
 		triangles);
 
+	pango_font_description_free (desc);
+
 	cairo_set_source_rgba (cr, 0.5, 0.5, 0.5, 0.4);
-	fancy_cairo_draw_triangles(cr, triangles);
+	//fancy_cairo_draw_triangles(cr, triangles);
+	cairo_restore (cr);
 }
-/*
-int main (int argc, char **argv)
-{
-	cairo_t *cr;
-	char *filename;
-	cairo_status_t status;
-	cairo_surface_t *surface;
 
-	if (argc != 2)
-		{
-			g_printerr ("Usage: cairotwisted OUTPUT_FILENAME\n");
-			return 1;
-		}
-
-	filename = argv[1];
-
-	surface = cairo_image_surface_create (CAIRO_FORMAT_ARGB32,
-					1000, 800);
-	cr = cairo_create (surface);
-
-	cairo_set_source_rgb (cr, 1.0, 1.0, 1.0);
-	cairo_paint (cr);
-
-	printf("zero\n");
-	std::vector<TwistedCurveCmd> zeroCmds;
-	zeroCmds.push_back(NewTwistedCurveCmd(MoveTo, 2, 50.0, 650.0));
-	zeroCmds.push_back(NewTwistedCurveCmd(RelLineTo, 2, 250.0, 50.0));
-	zeroCmds.push_back(NewTwistedCurveCmd(RelCurveTo, 6, 250.0, 50.0, 600.0, -50.0, 600.0, -250.0));
-	zeroCmds.push_back(NewTwistedCurveCmd(RelCurveTo, 6, 0.0, -400.0, -300.0, -100.0, -800.0, -300.0));
-	draw_zero (cr, zeroCmds);
-
-	printf("pow\n");
-	std::vector<TwistedCurveCmd> powCmds;
-	powCmds.push_back(NewTwistedCurveCmd(MoveTo, 2, 400.0, 600.0));
-	powCmds.push_back(NewTwistedCurveCmd(RelCurveTo, 6, 50.0, -50.0, 150.0, -50.0, 200.0, 0.0));
-	draw_pow (cr, powCmds);
-	cairo_surface_flush(surface);
-
-	cairo_destroy (cr);
-
-	status = cairo_surface_write_to_png (surface, filename);
-	cairo_surface_destroy (surface);
-
-	if (status != CAIRO_STATUS_SUCCESS)
-		{
-			g_printerr ("Could not save png to '%s'\n", filename);
-			return 1;
-		}
-
-	return 0;
-}
-*/
