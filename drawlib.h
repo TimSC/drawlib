@@ -68,14 +68,16 @@ public:
 class TextProperties
 {
 public:
-	double r, g, b, a;
+	double lr, lg, lb, la; //Line colour
+	double fr, fg, fb, fa; //Fill colour
 	std::string font;
 	double fontSize;
 	bool outline;
+	bool fill;
 	double lineWidth;
 
 	TextProperties();
-	TextProperties(double r, double g, double b);
+	TextProperties(double fr, double fg, double fb);
 	TextProperties(const TextProperties &arg);
 	virtual ~TextProperties();
 

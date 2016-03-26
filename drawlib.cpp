@@ -72,17 +72,21 @@ bool LineProperties::operator <(const LineProperties& rhs) const
 // *********************************************
 
 TextProperties::TextProperties()
-{r=1.0; g=1.0; b=1.0; a=1.0; fontSize=10.0; font="Sans"; outline = false; lineWidth = 1.0;
+{fr=1.0; fg=1.0; fb=1.0; fa=1.0; lr=1.0; lg=1.0; lb=1.0; la=1.0; 
+fontSize=10.0; font="Sans"; outline = false; fill=true; lineWidth = 1.0;
 }
 
-TextProperties::TextProperties(double r, double g, double b): r(r), g(g), b(b), a(1.0),
-	fontSize(10.0), font("Sans"), outline(false), lineWidth(1.0)
+TextProperties::TextProperties(double r, double g, double b): fr(r), fg(g), fb(b), fa(1.0),
+	lr(r), lg(g), lb(b), la(1.0),
+	fontSize(10.0), font("Sans"), outline(false), fill(true), lineWidth(1.0)
 {}
 
 TextProperties::TextProperties(const TextProperties &arg)
 {
-	r=arg.r; g=arg.g; b=arg.b; a=arg.a; fontSize=arg.fontSize; font=arg.font; 
-	outline=arg.outline; lineWidth=arg.lineWidth;
+	fr=arg.fr; fg=arg.fg; fb=arg.fb; fa=arg.fa;
+	lr=arg.lr; lg=arg.lg; lb=arg.lb; la=arg.la;  
+	fontSize=arg.fontSize; font=arg.font; 
+	outline=arg.outline; fill=arg.fill; lineWidth=arg.lineWidth;
 }
 
 TextProperties::~TextProperties()
@@ -90,20 +94,30 @@ TextProperties::~TextProperties()
 
 bool TextProperties::operator <(const TextProperties& rhs) const
 {
-	if(r < rhs.r) return true;
-	if(r > rhs.r) return false;
-	if(g < rhs.g) return true;
-	if(g > rhs.g) return false;
-	if(b < rhs.b) return true;
-	if(b > rhs.b) return false;
-	if(a < rhs.a) return true;
-	if(a > rhs.a) return false;
+	if(fr < rhs.fr) return true;
+	if(fr > rhs.fr) return false;
+	if(fg < rhs.fg) return true;
+	if(fg > rhs.fg) return false;
+	if(fb < rhs.fb) return true;
+	if(fb > rhs.fb) return false;
+	if(fa < rhs.fa) return true;
+	if(fa > rhs.fa) return false;
+	if(lr < rhs.lr) return true;
+	if(lr > rhs.lr) return false;
+	if(lg < rhs.lg) return true;
+	if(lg > rhs.lg) return false;
+	if(lb < rhs.lb) return true;
+	if(lb > rhs.lb) return false;
+	if(la < rhs.la) return true;
+	if(la > rhs.la) return false;
 	if(font < rhs.font) return true;
 	if(font > rhs.font) return false;
 	if(fontSize < rhs.fontSize) return true;
 	if(fontSize > rhs.fontSize) return false;
 	if(outline < rhs.outline) return true;
 	if(outline > rhs.outline) return false;
+	if(fill < rhs.fill) return true;
+	if(fill > rhs.fill) return false;
 	if(lineWidth < rhs.lineWidth) return true;
 	if(lineWidth > rhs.lineWidth) return false;
 

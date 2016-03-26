@@ -83,9 +83,10 @@ void DrawTestPatterns(class IDrawLib *drawLib)
 	class TextProperties properties2;
 	properties2.fontSize = 25.0;
 	properties2.outline = true;
-	properties2.r = 1.0;
-	properties2.g = 0.5;
-	properties2.b = 0.1;
+	properties2.fill = false;
+	properties2.lr = 1.0;
+	properties2.lg = 0.5;
+	properties2.lb = 0.1;
 	textStrs.push_back(label2);
 	drawLib->AddDrawTextCmd(textStrs, properties2);
 
@@ -97,7 +98,7 @@ void DrawTestPatterns(class IDrawLib *drawLib)
 	textStrs.clear();
 	class TextLabel label4("rotated", 60.0, 100.0, 0.6);
 	class TextLabel label5("foo", 180.0, 100.0, 0.0);
-	properties.a = 0.5;
+	properties.fa = 0.5;
 	textStrs.push_back(label4);
 	textStrs.push_back(label5);
 	drawLib->AddDrawTextCmd(textStrs, properties);
@@ -107,7 +108,7 @@ void DrawTestPatterns(class IDrawLib *drawLib)
 	pathCmds.push_back(NewTwistedCurveCmd(MoveTo, 2, 320.0, 100.0));
 	pathCmds.push_back(NewTwistedCurveCmd(RelCurveTo, 6, 50.0, -50.0, 150.0, -50.0, 200.0, 0.0));
 	twistedTextStrs.push_back(TwistedTextLabel("Woj!", pathCmds));
-	drawLib->AddDrawTwistedTextCmd(twistedTextStrs, properties);
+	drawLib->AddDrawTwistedTextCmd(twistedTextStrs, properties2);
 
 	drawLib->Draw();
 

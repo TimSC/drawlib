@@ -44,17 +44,17 @@ _fancy_cairo_stroke (cairo_t *cr, cairo_bool_t preserve)
 		switch (data->header.type) {
 		case CAIRO_PATH_MOVE_TO:
 		case CAIRO_PATH_LINE_TO:
-	cairo_move_to (cr, data[1].point.x, data[1].point.y);
-	break;
+			cairo_move_to (cr, data[1].point.x, data[1].point.y);
+			break;
 		case CAIRO_PATH_CURVE_TO:
-	cairo_line_to (cr, data[1].point.x, data[1].point.y);
-	cairo_move_to (cr, data[2].point.x, data[2].point.y);
-	cairo_line_to (cr, data[3].point.x, data[3].point.y);
-	break;
+			cairo_line_to (cr, data[1].point.x, data[1].point.y);
+			cairo_move_to (cr, data[2].point.x, data[2].point.y);
+			cairo_line_to (cr, data[3].point.x, data[3].point.y);
+			break;
 		case CAIRO_PATH_CLOSE_PATH:
-	break;
+			break;
 		default:
-	g_assert_not_reached ();
+			g_assert_not_reached ();
 		}
 	}
 	cairo_stroke (cr);
@@ -373,74 +373,74 @@ point_on_path (parametrized_path_t *param,
 			/* fall through */
 	case CAIRO_PATH_LINE_TO:
 			{
-	ratio = the_x / parametrization[i];
-	/* Line polynomial */
-	*x = current_point.point.x * (1 - ratio) + data[1].point.x * ratio;
-	*y = current_point.point.y * (1 - ratio) + data[1].point.y * ratio;
+			ratio = the_x / parametrization[i];
+			/* Line polynomial */
+			*x = current_point.point.x * (1 - ratio) + data[1].point.x * ratio;
+			*y = current_point.point.y * (1 - ratio) + data[1].point.y * ratio;
 
-	/* Line gradient */
-	dx = -(current_point.point.x - data[1].point.x);
-	dy = -(current_point.point.y - data[1].point.y);
+			/* Line gradient */
+			dx = -(current_point.point.x - data[1].point.x);
+			dy = -(current_point.point.y - data[1].point.y);
 
-	/*optimization for: ratio = the_y / sqrt (dx * dx + dy * dy);*/
-	ratio = the_y / parametrization[i];
-	*x += -dy * ratio;
-	*y +=	dx * ratio;
+			/*optimization for: ratio = the_y / sqrt (dx * dx + dy * dy);*/
+			ratio = the_y / parametrization[i];
+			*x += -dy * ratio;
+			*y +=	dx * ratio;
 			}
 			break;
 	case CAIRO_PATH_CURVE_TO:
 			{
-	/* FIXME the formulas here are not exactly what we want, because the
-	 * Bezier parametrization is not uniform.	But I don't know how to do
-	 * better.	The caller can do slightly better though, by flattening the
-	 * Bezier and avoiding this branch completely.	That has its own cost
-	 * though, as large y values magnify the flattening error drastically.
-	 */
+			/* FIXME the formulas here are not exactly what we want, because the
+			 * Bezier parametrization is not uniform.	But I don't know how to do
+			 * better.	The caller can do slightly better though, by flattening the
+			 * Bezier and avoiding this branch completely.	That has its own cost
+			 * though, as large y values magnify the flattening error drastically.
+			 */
 
-	double ratio_1_0, ratio_0_1;
-	double ratio_2_0, ratio_0_2;
-	double ratio_3_0, ratio_2_1, ratio_1_2, ratio_0_3;
-	double _1__4ratio_1_0_3ratio_2_0, _2ratio_1_0_3ratio_2_0;
+			double ratio_1_0, ratio_0_1;
+			double ratio_2_0, ratio_0_2;
+			double ratio_3_0, ratio_2_1, ratio_1_2, ratio_0_3;
+			double _1__4ratio_1_0_3ratio_2_0, _2ratio_1_0_3ratio_2_0;
 
-	ratio = the_x / parametrization[i];
+			ratio = the_x / parametrization[i];
 
-	ratio_1_0 = ratio;
-	ratio_0_1 = 1 - ratio;
+			ratio_1_0 = ratio;
+			ratio_0_1 = 1 - ratio;
 
-	ratio_2_0 = ratio_1_0 * ratio_1_0; /*			ratio	*			ratio	*/
-	ratio_0_2 = ratio_0_1 * ratio_0_1; /* (1 - ratio) * (1 - ratio) */
+			ratio_2_0 = ratio_1_0 * ratio_1_0; /*			ratio	*			ratio	*/
+			ratio_0_2 = ratio_0_1 * ratio_0_1; /* (1 - ratio) * (1 - ratio) */
 
-	ratio_3_0 = ratio_2_0 * ratio_1_0; /*			ratio	*			ratio	*			ratio	*/
-	ratio_2_1 = ratio_2_0 * ratio_0_1; /*			ratio	*			ratio	* (1 - ratio) */
-	ratio_1_2 = ratio_1_0 * ratio_0_2; /*			ratio	* (1 - ratio) * (1 - ratio) */
-	ratio_0_3 = ratio_0_1 * ratio_0_2; /* (1 - ratio) * (1 - ratio) * (1 - ratio) */
+			ratio_3_0 = ratio_2_0 * ratio_1_0; /*			ratio	*			ratio	*			ratio	*/
+			ratio_2_1 = ratio_2_0 * ratio_0_1; /*			ratio	*			ratio	* (1 - ratio) */
+			ratio_1_2 = ratio_1_0 * ratio_0_2; /*			ratio	* (1 - ratio) * (1 - ratio) */
+			ratio_0_3 = ratio_0_1 * ratio_0_2; /* (1 - ratio) * (1 - ratio) * (1 - ratio) */
 
-	_1__4ratio_1_0_3ratio_2_0 = 1 - 4 * ratio_1_0 + 3 * ratio_2_0;
-	_2ratio_1_0_3ratio_2_0		=		 2 * ratio_1_0 - 3 * ratio_2_0;
+			_1__4ratio_1_0_3ratio_2_0 = 1 - 4 * ratio_1_0 + 3 * ratio_2_0;
+			_2ratio_1_0_3ratio_2_0		=		 2 * ratio_1_0 - 3 * ratio_2_0;
 
-	/* Bezier polynomial */
-	*x = current_point.point.x * ratio_0_3
-		 + 3 *	 data[1].point.x * ratio_1_2
-		 + 3 *	 data[2].point.x * ratio_2_1
-		 +			 data[3].point.x * ratio_3_0;
-	*y = current_point.point.y * ratio_0_3
-		 + 3 *	 data[1].point.y * ratio_1_2
-		 + 3 *	 data[2].point.y * ratio_2_1
-		 +			 data[3].point.y * ratio_3_0;
+			/* Bezier polynomial */
+			*x = current_point.point.x * ratio_0_3
+				 + 3 *	 data[1].point.x * ratio_1_2
+				 + 3 *	 data[2].point.x * ratio_2_1
+				 +			 data[3].point.x * ratio_3_0;
+			*y = current_point.point.y * ratio_0_3
+				 + 3 *	 data[1].point.y * ratio_1_2
+				 + 3 *	 data[2].point.y * ratio_2_1
+				 +			 data[3].point.y * ratio_3_0;
 
-	/* Bezier gradient */
-	dx =-3 * current_point.point.x * ratio_0_2
-		 + 3 *			 data[1].point.x * _1__4ratio_1_0_3ratio_2_0
-		 + 3 *			 data[2].point.x * _2ratio_1_0_3ratio_2_0
-		 + 3 *			 data[3].point.x * ratio_2_0;
-	dy =-3 * current_point.point.y * ratio_0_2
-		 + 3 *			 data[1].point.y * _1__4ratio_1_0_3ratio_2_0
-		 + 3 *			 data[2].point.y * _2ratio_1_0_3ratio_2_0
-		 + 3 *			 data[3].point.y * ratio_2_0;
+			/* Bezier gradient */
+			dx =-3 * current_point.point.x * ratio_0_2
+				 + 3 *			 data[1].point.x * _1__4ratio_1_0_3ratio_2_0
+				 + 3 *			 data[2].point.x * _2ratio_1_0_3ratio_2_0
+				 + 3 *			 data[3].point.x * ratio_2_0;
+			dy =-3 * current_point.point.y * ratio_0_2
+				 + 3 *			 data[1].point.y * _1__4ratio_1_0_3ratio_2_0
+				 + 3 *			 data[2].point.y * _2ratio_1_0_3ratio_2_0
+				 + 3 *			 data[3].point.y * ratio_2_0;
 
-	ratio = the_y / sqrt (dx * dx + dy * dy);
-	*x += -dy * ratio;
-	*y +=	dx * ratio;
+			ratio = the_y / sqrt (dx * dx + dy * dy);
+			*x += -dy * ratio;
+			*y +=	dx * ratio;
 			}
 			break;
 	default:
@@ -461,7 +461,6 @@ map_path_onto (cairo_t *cr, parametrized_path_t &param)
 	cairo_append_path (cr, current_path);
 
 	cairo_path_destroy (current_path);
-	param.parametrization.clear();
 }
 
 
@@ -623,11 +622,26 @@ draw_twisted (cairo_t *cr,
 	else
 		trianglesOut.clear();
 
+	param.parametrization.clear();
+
 	cairo_path_destroy (path);
 
-	if(doDrawing && !properties.outline)
+	if(doDrawing)
 	{
-		cairo_fill (cr);
+		if(properties.outline)
+		{
+			cairo_set_line_width (cr, properties.lineWidth);
+			cairo_set_source_rgba (cr, properties.lr, properties.lg, properties.lb, properties.la);
+			if(properties.fill)
+				cairo_stroke_preserve (cr);
+			else
+				cairo_stroke (cr);
+		}
+		if(properties.fill)
+		{
+			cairo_set_source_rgba (cr, properties.fr, properties.fg, properties.fb, properties.fa);
+			cairo_fill (cr);
+		}
 	}
 	cairo_restore (cr);
 }
@@ -666,9 +680,6 @@ void draw_formatted_twisted_text (cairo_t *cr, const std::string &text, const st
 {
 	cairo_save (cr);
 	RunTwistedCurveCmds(cr, cmds);
-
-	cairo_set_line_width (cr, properties.lineWidth);
-	cairo_set_source_rgba (cr, properties.r, properties.g, properties.b, properties.a);
 
 	//Draw Bezier curve used to define shape
 	//fancy_cairo_stroke_preserve (cr);
