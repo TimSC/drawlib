@@ -396,16 +396,22 @@ int DrawLibCairoPango::GetTriangleBoundsText(const TextLabel &label, const class
 
 	pango_font_description_free (desc);
 
+	//Find rotated dimensions
+	double vwx = width * cos(-label.ang);
+	double vwy = - width * sin(-label.ang);
+	double vhx = height * cos(-label.ang - M_PI / 2.0);
+	double vhy = - height * sin(-label.ang - M_PI / 2.0);
+
 	std::vector<Point> tri1;
 	tri1.push_back(Point(label.x, label.y));
-	tri1.push_back(Point(label.x+width, label.y));
-	tri1.push_back(Point(label.x, label.y+height));
+	tri1.push_back(Point(label.x+vwx, label.y+vwy));
+	tri1.push_back(Point(label.x+vhx, label.y+vhy));
 	trianglesOut.push_back(tri1);
 
 	std::vector<Point> tri2;
-	tri2.push_back(Point(label.x, label.y+height));
-	tri2.push_back(Point(label.x+width, label.y));
-	tri2.push_back(Point(label.x+width, label.y+height));
+	tri2.push_back(Point(label.x+vhx, label.y+vhy));
+	tri2.push_back(Point(label.x+vwx, label.y+vwy));
+	tri2.push_back(Point(label.x+vwx+vhx, label.y+vwy+vhy));
 	trianglesOut.push_back(tri2);
 
 	cairo_set_source_rgba (this->cr, 0.5, 0.5, 0.5, 0.4);
