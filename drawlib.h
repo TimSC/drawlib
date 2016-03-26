@@ -191,6 +191,10 @@ public:
 	virtual void AddDrawTwistedTextCmd(const std::vector<class TwistedTextLabel> &textStrs, const class TextProperties &properties) = 0;
 	virtual int GetTextExtents(const char *textStr, const class TextProperties &properties, 
 		double &width, double &height) = 0;
+	virtual int GetTriangleBoundsTwistedText(const TwistedTextLabel &label, 
+		const class TextProperties &properties, 
+		TwistedTriangles &trianglesOut) = 0;
+
 	virtual int GetDrawableExtents(double &x1,
 		double &y1,
 		double &x2,
@@ -216,6 +220,9 @@ public:
 	void AddDrawTwistedTextCmd(const std::vector<class TwistedTextLabel> &textStrs, const class TextProperties &properties);
 	int GetTextExtents(const char *textStr, const class TextProperties &properties, 
 		double &width, double &height);
+	int GetTriangleBoundsTwistedText(const TwistedTextLabel &label, 
+		const class TextProperties &properties, 
+		TwistedTriangles &trianglesOut);
 };
 
 #endif //_DRAWLIB_H

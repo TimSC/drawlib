@@ -284,6 +284,14 @@ int LocalStore::GetTextExtents(const char *textStr, const class TextProperties &
 	return -1;
 }
 
+int LocalStore::GetTriangleBoundsTwistedText(const TwistedTextLabel &label, 
+	const class TextProperties &properties, 
+	TwistedTriangles &trianglesOut)
+{
+	trianglesOut.clear();
+	return -1;
+}
+
 // ****************************************
 
 ///Convenience factory to create a curve command

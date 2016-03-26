@@ -383,3 +383,14 @@ int DrawLibCairoPango::GetTextExtents(const char *textStr, const class TextPrope
 	return 0;
 }
 
+int DrawLibCairoPango::GetTriangleBoundsTwistedText(const TwistedTextLabel &label, 
+		const class TextProperties &properties, 
+		TwistedTriangles &trianglesOut)
+{
+	get_bounding_triangles_twisted_text (this->cr, label.text, label.path,
+		properties, trianglesOut);
+	cairo_set_source_rgba (this->cr, 0.5, 0.5, 0.5, 0.4);
+	fancy_cairo_draw_triangles(this->cr, trianglesOut);
+	return 0;
+}
+

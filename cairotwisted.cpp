@@ -643,6 +643,7 @@ draw_twisted (cairo_t *cr,
 			cairo_fill (cr);
 		}
 	}
+	cairo_new_path (cr); //Clear anything left over
 	cairo_restore (cr);
 }
 
@@ -699,8 +700,32 @@ void draw_formatted_twisted_text (cairo_t *cr, const std::string &text, const st
 
 	pango_font_description_free (desc);
 
-	cairo_set_source_rgba (cr, 0.5, 0.5, 0.5, 0.4);
-	fancy_cairo_draw_triangles(cr, triangles);
+	cairo_restore (cr);
+}
+
+void get_bounding_triangles_twisted_text (cairo_t *cr, const std::string &text, const std::vector<TwistedCurveCmd> &cmds,
+	const class TextProperties &properties, TwistedTriangles &trianglesOut)
+{
+	trianglesOut.clear();
+	cairo_save (cr);
+	RunTwistedCurveCmds(cr, cmds);
+
+	PangoFontDescription *desc = pango_font_description_from_string (properties.font.c_str());
+	pango_font_description_set_size (desc, round(properties.fontSize * PANGO_SCALE));
+
+	draw_twisted (cr,
+		0, 0,
+		desc,
+		text.c_str(),
+		false,
+		true,
+		properties,
+		trianglesOut);
+
+	pango_font_description_free (desc);
+
+	//cairo_set_source_rgba (cr, 0.5, 0.5, 0.5, 0.4);
+	//fancy_cairo_draw_triangles(cr, triangles);
 	cairo_restore (cr);
 }
 

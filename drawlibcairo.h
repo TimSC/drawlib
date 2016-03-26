@@ -43,6 +43,9 @@ public:
 
 	int GetTextExtents(const char *textStr, const class TextProperties &properties, 
 		double &width, double &height);
+	int GetTriangleBoundsTwistedText(const TwistedTextLabel &label, 
+		const class TextProperties &properties, 
+		TwistedTriangles &trianglesOut);
 };
 
 #endif //_DRAW_LIB_CAIRO_H
