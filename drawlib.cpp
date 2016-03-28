@@ -72,13 +72,16 @@ bool LineProperties::operator <(const LineProperties& rhs) const
 // *********************************************
 
 TextProperties::TextProperties()
-{fr=1.0; fg=1.0; fb=1.0; fa=1.0; lr=1.0; lg=1.0; lb=1.0; la=1.0; 
-fontSize=10.0; font="Sans"; outline = false; fill=true; lineWidth = 1.0;
+{
+	fr=1.0; fg=1.0; fb=1.0; fa=1.0; lr=1.0; lg=1.0; lb=1.0; la=1.0; 
+	fontSize=10.0; font="Sans"; outline = false; fill=true; lineWidth = 1.0;
+	valign = 0.0; halign = 0.0;
 }
 
 TextProperties::TextProperties(double r, double g, double b): fr(r), fg(g), fb(b), fa(1.0),
 	lr(r), lg(g), lb(b), la(1.0),
-	fontSize(10.0), font("Sans"), outline(false), fill(true), lineWidth(1.0)
+	fontSize(10.0), font("Sans"), outline(false), fill(true), lineWidth(1.0),
+	valign(0.0), halign(0.0)
 {}
 
 TextProperties::TextProperties(const TextProperties &arg)
@@ -87,6 +90,7 @@ TextProperties::TextProperties(const TextProperties &arg)
 	lr=arg.lr; lg=arg.lg; lb=arg.lb; la=arg.la;  
 	fontSize=arg.fontSize; font=arg.font; 
 	outline=arg.outline; fill=arg.fill; lineWidth=arg.lineWidth;
+	valign=arg.valign; halign=arg.halign;
 }
 
 TextProperties::~TextProperties()
@@ -120,7 +124,10 @@ bool TextProperties::operator <(const TextProperties& rhs) const
 	if(fill > rhs.fill) return false;
 	if(lineWidth < rhs.lineWidth) return true;
 	if(lineWidth > rhs.lineWidth) return false;
-
+	if(valign < rhs.valign) return true;
+	if(valign > rhs.valign) return false;
+	if(halign < rhs.halign) return true;
+	if(halign > rhs.halign) return false;
 	return false;
 }
 

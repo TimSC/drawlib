@@ -75,6 +75,8 @@ public:
 	bool outline;
 	bool fill;
 	double lineWidth;
+	float valign; //0.0 is left aligned, 1.0 is right aligned
+	float halign; //0.0 is top aligned, 1.0 is bottom aligned
 
 	TextProperties();
 	TextProperties(double fr, double fg, double fb);

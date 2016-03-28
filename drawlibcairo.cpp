@@ -325,10 +325,19 @@ void DrawLibCairoPango::DrawCmdText(class DrawTextCmd &textCmd)
 
 		if(properties.outline)
 		{
-			cairo_move_to(cr, textStrs[i].x - logical_rect.x, textStrs[i].y - logical_rect.y);
+
 			cairo_save (this->cr);
+
+			cairo_translate (this->cr,
+                  textStrs[i].x - logical_rect.x,
+                  textStrs[i].y - logical_rect.y);
 			if(textStrs[i].ang!= 0.0)
 				cairo_rotate (cr, textStrs[i].ang);
+			cairo_translate (this->cr,
+                  - logical_rect.width * properties.halign,
+                  - logical_rect.height * properties.valign);
+			cairo_move_to(cr, 0.0, 
+				0.0);
 
 			cairo_set_source_rgba(cr, properties.lr, properties.lg, properties.lb, properties.la);
 			cairo_set_line_width(cr, properties.lineWidth);
@@ -340,10 +349,19 @@ void DrawLibCairoPango::DrawCmdText(class DrawTextCmd &textCmd)
 
 		if(properties.fill)
 		{
-			cairo_move_to(cr, textStrs[i].x - logical_rect.x, textStrs[i].y - logical_rect.y);
+
 			cairo_save (this->cr);
+
+			cairo_translate (this->cr,
+                  textStrs[i].x - logical_rect.x,
+                  textStrs[i].y - logical_rect.y);
 			if(textStrs[i].ang!= 0.0)
 				cairo_rotate (cr, textStrs[i].ang);
+			cairo_translate (this->cr,
+                  - logical_rect.width * properties.halign,
+                  - logical_rect.height * properties.valign);
+			cairo_move_to(cr, 0.0, 
+				0.0);
 
 			cairo_set_source_rgba(cr, properties.fr, properties.fg, properties.fb, properties.fa);
 			pango_cairo_show_layout (cr, layout);
@@ -402,20 +420,27 @@ int DrawLibCairoPango::GetTriangleBoundsText(const TextLabel &label, const class
 	double vhx = height * cos(-label.ang - M_PI / 2.0);
 	double vhy = - height * sin(-label.ang - M_PI / 2.0);
 
+	double valignx = - vhx * properties.valign;
+	double valigny = - vhy * properties.valign;
+	double halignx = - vwx * properties.halign;
+	double haligny = - vwy * properties.halign;
+	double alignx = valignx+halignx;
+	double aligny = valigny+haligny;
+
 	std::vector<Point> tri1;
-	tri1.push_back(Point(label.x, label.y));
-	tri1.push_back(Point(label.x+vwx, label.y+vwy));
-	tri1.push_back(Point(label.x+vhx, label.y+vhy));
+	tri1.push_back(Point(label.x+alignx, label.y+aligny));
+	tri1.push_back(Point(label.x+vwx+alignx, label.y+vwy+aligny));
+	tri1.push_back(Point(label.x+vhx+alignx, label.y+vhy+aligny));
 	trianglesOut.push_back(tri1);
 
 	std::vector<Point> tri2;
-	tri2.push_back(Point(label.x+vhx, label.y+vhy));
-	tri2.push_back(Point(label.x+vwx, label.y+vwy));
-	tri2.push_back(Point(label.x+vwx+vhx, label.y+vwy+vhy));
+	tri2.push_back(Point(label.x+vhx+alignx, label.y+vhy+aligny));
+	tri2.push_back(Point(label.x+vwx+alignx, label.y+vwy+aligny));
+	tri2.push_back(Point(label.x+vwx+vhx+alignx, label.y+vwy+vhy+aligny));
 	trianglesOut.push_back(tri2);
 
-	//cairo_set_source_rgba (this->cr, 0.5, 0.5, 0.5, 0.4);
-	//fancy_cairo_draw_triangles(this->cr, trianglesOut);
+	cairo_set_source_rgba (this->cr, 0.5, 0.5, 0.5, 0.4);
+	fancy_cairo_draw_triangles(this->cr, trianglesOut);
 
 	return 0;
 }
@@ -426,8 +451,8 @@ int DrawLibCairoPango::GetTriangleBoundsTwistedText(const TwistedTextLabel &labe
 {
 	get_bounding_triangles_twisted_text (this->cr, label.text, label.path,
 		properties, trianglesOut);
-	//cairo_set_source_rgba (this->cr, 0.5, 0.5, 0.5, 0.4);
-	//fancy_cairo_draw_triangles(this->cr, trianglesOut);
+	cairo_set_source_rgba (this->cr, 0.5, 0.5, 0.5, 0.4);
+	fancy_cairo_draw_triangles(this->cr, trianglesOut);
 	return 0;
 }
 
