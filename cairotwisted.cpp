@@ -472,6 +472,7 @@ draw_text (cairo_t *cr,
 		 double y,
 		 const char *text,
 		 PangoFontDescription *desc,
+		 const class TextProperties &properties,
 		 PangoRectangle *ink_rect_out,
 		 PangoRectangle *logical_rect_out)
 {
@@ -498,12 +499,20 @@ draw_text (cairo_t *cr,
 	 */
 	line = pango_layout_get_line_readonly (layout, 0);
 
-	cairo_move_to (cr, x, y);
-	pango_cairo_layout_line_path (cr, line);
-
 	pango_layout_line_get_pixel_extents (line,
 		ink_rect_out,
 		logical_rect_out);
+
+	double tx = -logical_rect_out->width * properties.halign;
+	double ty = logical_rect_out->height * (1.0 - properties.valign);
+
+	logical_rect_out->x += tx;
+	logical_rect_out->y += ty;
+	ink_rect_out->x += tx;
+	ink_rect_out->y += ty;
+
+	cairo_move_to (cr, x + tx, y + ty);
+	pango_cairo_layout_line_path (cr, line);
 
 	g_object_unref (layout);
 }
@@ -606,7 +615,7 @@ draw_twisted (cairo_t *cr,
 
 	PangoRectangle ink_rect;
 	PangoRectangle logical_rect;
-	draw_text (cr, x, y, text, desc, &ink_rect, &logical_rect);
+	draw_text (cr, x, y, text, desc, properties, &ink_rect, &logical_rect);
 	printf("ink %d %d %d %d\n", ink_rect.x, ink_rect.y, ink_rect.width, ink_rect.height);
 	printf("logical %d %d %d %d\n", logical_rect.x, logical_rect.y, logical_rect.width, logical_rect.height);
 
@@ -683,7 +692,7 @@ void draw_formatted_twisted_text (cairo_t *cr, const std::string &text, const st
 	RunTwistedCurveCmds(cr, cmds);
 
 	//Draw Bezier curve used to define shape
-	//fancy_cairo_stroke_preserve (cr);
+	fancy_cairo_stroke_preserve (cr);
 
 	PangoFontDescription *desc = pango_font_description_from_string (properties.font.c_str());
 	pango_font_description_set_size (desc, round(properties.fontSize * PANGO_SCALE));

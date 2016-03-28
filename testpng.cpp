@@ -108,11 +108,12 @@ void DrawTestPatterns(class IDrawLib *drawLib)
 	std::vector<TwistedCurveCmd> pathCmds;
 	pathCmds.push_back(NewTwistedCurveCmd(MoveTo, 2, 320.0, 100.0));
 	pathCmds.push_back(NewTwistedCurveCmd(RelCurveTo, 6, 50.0, -50.0, 150.0, -50.0, 200.0, 0.0));
-	twistedTextStrs.push_back(TwistedTextLabel("Woj!", pathCmds));
+	twistedTextStrs.push_back(TwistedTextLabel(arabic, pathCmds));
+	properties2.valign = 0.5;
 	drawLib->AddDrawTwistedTextCmd(twistedTextStrs, properties2);
 
 	//Test triangles for twisted text
-	drawLib->GetTriangleBoundsTwistedText(TwistedTextLabel("Woj!", pathCmds),
+	drawLib->GetTriangleBoundsTwistedText(TwistedTextLabel(arabic, pathCmds),
 		properties2, 
 		triangles);
 
