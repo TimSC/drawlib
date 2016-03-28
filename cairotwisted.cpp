@@ -692,7 +692,7 @@ void draw_formatted_twisted_text (cairo_t *cr, const std::string &text, const st
 	RunTwistedCurveCmds(cr, cmds);
 
 	//Draw Bezier curve used to define shape
-	fancy_cairo_stroke_preserve (cr);
+	//fancy_cairo_stroke_preserve (cr);
 
 	PangoFontDescription *desc = pango_font_description_from_string (properties.font.c_str());
 	pango_font_description_set_size (desc, round(properties.fontSize * PANGO_SCALE));
