@@ -6,6 +6,7 @@ void SmoothContour(const Contour &line, std::vector<TwistedCurveCmd> &bezierOut)
 {
 	bezierOut.clear();
 	double cx = 0.0, cy = 0.0;
+	double px = 0.0, py = 0.0;
 	if(line.size() >= 1)
 	{
 		cx = line[0].first;
@@ -17,10 +18,18 @@ void SmoothContour(const Contour &line, std::vector<TwistedCurveCmd> &bezierOut)
 		const Point &pt = line[i];
 		double dx = pt.first - cx;
 		double dy = pt.second - cy;
-		double b = 0.2;
-		bezierOut.push_back(NewTwistedCurveCmd(CurveTo, 6, cx+dx*b, cy+dy*b, pt.first-dx*b, pt.second-dy*b, pt.first, pt.second));
-		cx = pt.first;
-		cy = pt.second;
+		double a = 0.2;
+		double b = 0.1;
+		double c1x = cx+dx*a;
+		double c1y = cy+dy*a;
+		double p1x = cx+dx*(a-b);
+		double p1y = cy+dy*(a-b);
+		px = cx+dx*(a+b);
+		py = cy+dy*(a+b);
+		
+		bezierOut.push_back(NewTwistedCurveCmd(CurveTo, 6, px, py, p1x, p1y, c1x, c1y));
+		cx = c1x;
+		cy = c1y;
 
 	}
 }
