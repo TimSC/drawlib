@@ -35,7 +35,7 @@ void DrawTestPatterns(class IDrawLib *drawLib)
 	line1.push_back(Point(100, 100));
 	line1.push_back(Point(160, 110));
 	line1.push_back(Point(60, 50));
-	class LineProperties lineProp1(0.0, 0.9, 0.0, 3.0);
+	class LineProperties lineProp1(0.0, 0.9, 0.0, 1.0);
 	lineProp1.closedLoop = true;
 	Contours lines1;
 	lines1.push_back(line1);
@@ -67,7 +67,7 @@ void DrawTestPatterns(class IDrawLib *drawLib)
 	Contour cross2;
 	cross2.push_back(Point(60, 45));
 	cross2.push_back(Point(60, 55));
-	class LineProperties lineProp2(0.0, 0.0, 1.0, 2.0);
+	class LineProperties lineProp2(0.0, 0.0, 1.0, 1.0);
 	Contours lines2;
 	lines2.push_back(cross1);
 	lines2.push_back(cross2);
@@ -116,6 +116,30 @@ void DrawTestPatterns(class IDrawLib *drawLib)
 	drawLib->GetTriangleBoundsTwistedText(TwistedTextLabel(arabic, pathCmds),
 		properties2, 
 		triangles);
+
+	Contour line3;
+	line3.push_back(Point(320.0, 150.0));
+	line3.push_back(Point(380.0, 210.0));
+	line3.push_back(Point(440.0, 150.0));
+	line3.push_back(Point(460.0, 150.0));
+	line3.push_back(Point(460.0, 220.0));
+	line3.push_back(Point(480.0, 240.0));
+	class LineProperties lineProp3(0.0, 0.9, 0.0, 1.0);
+	Contours lines3;
+	lines3.push_back(line3);
+	drawLib->AddDrawLinesCmd(lines3, lineProp3);
+
+	//Test fitting Bezier to set of points
+	/*std::vector<class TwistedTextLabel> twistedTextStrs2;
+	std::vector<TwistedCurveCmd> pathCmds2;
+	pathCmds.push_back(NewTwistedCurveCmd(MoveTo, 2, 320.0, 200.0));
+	pathCmds.push_back(NewTwistedCurveCmd(LineTo, 2, 380.0, 260.0));
+	pathCmds.push_back(NewTwistedCurveCmd(LineTo, 2, 440.0, 200.0));
+	pathCmds.push_back(NewTwistedCurveCmd(LineTo, 2, 460.0, 200.0));
+	pathCmds.push_back(NewTwistedCurveCmd(LineTo, 2, 460.0, 270.0));
+	pathCmds.push_back(NewTwistedCurveCmd(LineTo, 2, 480.0, 290.0));
+	twistedTextStrs2.push_back(TwistedTextLabel(arabic, pathCmds2));
+	drawLib->AddDrawTwistedTextCmd(twistedTextStrs2, properties2);*/
 
 	drawLib->Draw();
 
