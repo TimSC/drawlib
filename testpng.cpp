@@ -2,6 +2,29 @@
 #include <iostream>
 using namespace std;
 
+void SmoothContour(const Contour &line, std::vector<TwistedCurveCmd> &bezierOut)
+{
+	bezierOut.clear();
+	double cx = 0.0, cy = 0.0;
+	if(line.size() >= 1)
+	{
+		cx = line[0].first;
+		cy = line[0].second;
+		bezierOut.push_back(NewTwistedCurveCmd(MoveTo, 2, cx, line[0].second));
+	}
+	for(size_t i=1; i < line.size(); i++)
+	{
+		const Point &pt = line[i];
+		double dx = pt.first - cx;
+		double dy = pt.second - cy;
+		double b = 0.2;
+		bezierOut.push_back(NewTwistedCurveCmd(CurveTo, 6, cx+dx*b, cy+dy*b, pt.first-dx*b, pt.second-dy*b, pt.first, pt.second));
+		cx = pt.first;
+		cy = pt.second;
+
+	}
+}
+
 void DrawTestPatterns(class IDrawLib *drawLib)
 {
 	Contour outer;
@@ -130,16 +153,15 @@ void DrawTestPatterns(class IDrawLib *drawLib)
 	drawLib->AddDrawLinesCmd(lines3, lineProp3);
 
 	//Test fitting Bezier to set of points
-	/*std::vector<class TwistedTextLabel> twistedTextStrs2;
+	const char *rooms = "All the rooms renumbered. All the rooms renumbered. All the rooms renumbered.";
 	std::vector<TwistedCurveCmd> pathCmds2;
-	pathCmds.push_back(NewTwistedCurveCmd(MoveTo, 2, 320.0, 200.0));
-	pathCmds.push_back(NewTwistedCurveCmd(LineTo, 2, 380.0, 260.0));
-	pathCmds.push_back(NewTwistedCurveCmd(LineTo, 2, 440.0, 200.0));
-	pathCmds.push_back(NewTwistedCurveCmd(LineTo, 2, 460.0, 200.0));
-	pathCmds.push_back(NewTwistedCurveCmd(LineTo, 2, 460.0, 270.0));
-	pathCmds.push_back(NewTwistedCurveCmd(LineTo, 2, 480.0, 290.0));
-	twistedTextStrs2.push_back(TwistedTextLabel(arabic, pathCmds2));
-	drawLib->AddDrawTwistedTextCmd(twistedTextStrs2, properties2);*/
+	SmoothContour(line3, pathCmds2);
+	class TextProperties properties3;
+	properties3.fontSize = 15.0;
+	properties3.valign = 1.0;
+	std::vector<class TwistedTextLabel> twistedTextStrs2;
+	twistedTextStrs2.push_back(TwistedTextLabel(rooms, pathCmds2));
+	drawLib->AddDrawTwistedTextCmd(twistedTextStrs2, properties3);
 
 	drawLib->Draw();
 
@@ -147,7 +169,7 @@ void DrawTestPatterns(class IDrawLib *drawLib)
 
 int main(void)
 {
-	cairo_surface_t *surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, 640, 240);
+	cairo_surface_t *surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, 640, 480);
 	class DrawLibCairoPango drawlib(surface);
 	//class DrawLibCairo drawlib(surface);
 	

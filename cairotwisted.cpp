@@ -692,7 +692,7 @@ void draw_formatted_twisted_text (cairo_t *cr, const std::string &text, const st
 	RunTwistedCurveCmds(cr, cmds);
 
 	//Draw Bezier curve used to define shape
-	//fancy_cairo_stroke_preserve (cr);
+	fancy_cairo_stroke_preserve (cr);
 
 	PangoFontDescription *desc = pango_font_description_from_string (properties.font.c_str());
 	pango_font_description_set_size (desc, round(properties.fontSize * PANGO_SCALE));
@@ -734,7 +734,7 @@ void get_bounding_triangles_twisted_text (cairo_t *cr, const std::string &text, 
 	pango_font_description_free (desc);
 
 	//cairo_set_source_rgba (cr, 0.5, 0.5, 0.5, 0.4);
-	//fancy_cairo_draw_triangles(cr, triangles);
+	//fancy_cairo_draw_triangles(cr, trianglesOut);
 	cairo_restore (cr);
 }
 
