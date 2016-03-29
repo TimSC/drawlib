@@ -6,31 +6,57 @@ void SmoothContour(const Contour &line, std::vector<TwistedCurveCmd> &bezierOut)
 {
 	bezierOut.clear();
 	double cx = 0.0, cy = 0.0;
-	double px = 0.0, py = 0.0;
+	double px = 0.0, py = 0.0; //Control point from previous curve sections
+
+	//Control parameters
+	double a = 0.2;
+	double a2 = 1.0 - a;
+	double b = 0.05;
+
 	if(line.size() >= 1)
 	{
 		cx = line[0].first;
 		cy = line[0].second;
 		bezierOut.push_back(NewTwistedCurveCmd(MoveTo, 2, cx, line[0].second));
+		px = cx; py = cy;
 	}
 	for(size_t i=1; i < line.size(); i++)
 	{
 		const Point &pt = line[i];
 		double dx = pt.first - cx;
 		double dy = pt.second - cy;
-		double a = 0.2;
-		double b = 0.1;
+		
+		//Control point at begining of straight
 		double c1x = cx+dx*a;
 		double c1y = cy+dy*a;
 		double p1x = cx+dx*(a-b);
 		double p1y = cy+dy*(a-b);
-		px = cx+dx*(a+b);
-		py = cy+dy*(a+b);
-		
-		bezierOut.push_back(NewTwistedCurveCmd(CurveTo, 6, px, py, p1x, p1y, c1x, c1y));
-		cx = c1x;
-		cy = c1y;
+		double p2x = cx+dx*(a+b);
+		double p2y = cy+dy*(a+b);
 
+		//Control point at end of straight (and beginning of curve)
+		double c2x = cx+dx*a2;
+		double c2y = cy+dy*a2;
+		double p3x = cx+dx*(a2-b);
+		double p3y = cy+dy*(a2-b);
+
+		bezierOut.push_back(NewTwistedCurveCmd(CurveTo, 6, px, py, p1x, p1y, c1x, c1y));
+		bezierOut.push_back(NewTwistedCurveCmd(CurveTo, 6, p2x, p2y, p3x, p3y, c2x, c2y));
+
+		px = cx+dx*(a2+b);
+		py = cy+dy*(a2+b);
+		cx = pt.first;
+		cy = pt.second;
+	}
+
+	if(line.size() > 1)
+	{
+		const Point &penultimate = line[line.size()-2];
+		const Point &end = line[line.size()-1];
+		double dx = end.first - penultimate.first;
+		double dy = end.second - penultimate.second;
+		//End the path
+		bezierOut.push_back(NewTwistedCurveCmd(CurveTo, 6, px, py, end.first - dx * a, end.second - dy * a, end.first, end.second));
 	}
 }
 
@@ -156,18 +182,22 @@ void DrawTestPatterns(class IDrawLib *drawLib)
 	line3.push_back(Point(460.0, 150.0));
 	line3.push_back(Point(460.0, 220.0));
 	line3.push_back(Point(480.0, 240.0));
+	line3.push_back(Point(550.0, 240.0));
+	line3.push_back(Point(550.0, 200.0));
+	line3.push_back(Point(560.0, 150.0));
+	line3.push_back(Point(600.0, 170.0));
 	class LineProperties lineProp3(0.0, 0.9, 0.0, 1.0);
 	Contours lines3;
 	lines3.push_back(line3);
 	drawLib->AddDrawLinesCmd(lines3, lineProp3);
 
 	//Test fitting Bezier to set of points
-	const char *rooms = "All the rooms renumbered. All the rooms renumbered. All the rooms renumbered.";
+	const char *rooms = "All the rooms renumbered. All the rooms renumbered.";
 	std::vector<TwistedCurveCmd> pathCmds2;
 	SmoothContour(line3, pathCmds2);
 	class TextProperties properties3;
 	properties3.fontSize = 15.0;
-	properties3.valign = 1.0;
+	properties3.valign = 0.8;
 	std::vector<class TwistedTextLabel> twistedTextStrs2;
 	twistedTextStrs2.push_back(TwistedTextLabel(rooms, pathCmds2));
 	drawLib->AddDrawTwistedTextCmd(twistedTextStrs2, properties3);
