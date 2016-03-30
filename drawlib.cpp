@@ -324,3 +324,61 @@ TwistedCurveCmd NewTwistedCurveCmd(TwistedCurveCmdType ty, int n_args, ...)
 	return TwistedCurveCmd(ty, vals);
 }
 
+void SmoothContour(const Contour &line, std::vector<TwistedCurveCmd> &bezierOut)
+{
+	bezierOut.clear();
+	double cx = 0.0, cy = 0.0;
+	double px = 0.0, py = 0.0; //Control point from previous curve sections
+
+	//Control parameters
+	double a = 0.2;
+	double a2 = 1.0 - a;
+	double b = 0.05;
+
+	if(line.size() >= 1)
+	{
+		cx = line[0].first;
+		cy = line[0].second;
+		bezierOut.push_back(NewTwistedCurveCmd(MoveTo, 2, cx, line[0].second));
+		px = cx; py = cy;
+	}
+	for(size_t i=1; i < line.size(); i++)
+	{
+		const Point &pt = line[i];
+		double dx = pt.first - cx;
+		double dy = pt.second - cy;
+		
+		//Control point at begining of straight
+		double c1x = cx+dx*a;
+		double c1y = cy+dy*a;
+		double p1x = cx+dx*(a-b);
+		double p1y = cy+dy*(a-b);
+		double p2x = cx+dx*(a+b);
+		double p2y = cy+dy*(a+b);
+
+		//Control point at end of straight (and beginning of curve)
+		double c2x = cx+dx*a2;
+		double c2y = cy+dy*a2;
+		double p3x = cx+dx*(a2-b);
+		double p3y = cy+dy*(a2-b);
+
+		bezierOut.push_back(NewTwistedCurveCmd(CurveTo, 6, px, py, p1x, p1y, c1x, c1y));
+		bezierOut.push_back(NewTwistedCurveCmd(CurveTo, 6, p2x, p2y, p3x, p3y, c2x, c2y));
+
+		px = cx+dx*(a2+b);
+		py = cy+dy*(a2+b);
+		cx = pt.first;
+		cy = pt.second;
+	}
+
+	if(line.size() > 1)
+	{
+		const Point &penultimate = line[line.size()-2];
+		const Point &end = line[line.size()-1];
+		double dx = end.first - penultimate.first;
+		double dy = end.second - penultimate.second;
+		//End the path
+		bezierOut.push_back(NewTwistedCurveCmd(CurveTo, 6, px, py, end.first - dx * a, end.second - dy * a, end.first, end.second));
+	}
+}
+

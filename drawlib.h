@@ -32,6 +32,7 @@ enum TwistedCurveCmdType
 
 typedef std::pair<TwistedCurveCmdType, std::vector<double> > TwistedCurveCmd;
 TwistedCurveCmd NewTwistedCurveCmd(TwistedCurveCmdType ty, int n_args, ...);
+void SmoothContour(const Contour &line, std::vector<TwistedCurveCmd> &bezierOut);
 
 ///Drawing properties of shapes that are filled
 class ShapeProperties
