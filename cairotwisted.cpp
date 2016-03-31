@@ -11,8 +11,10 @@
 #include <stdlib.h>
 #include <pango/pangocairo.h>
 #include <stdexcept>
+#include <iostream>
 #include "drawlib.h"
 #include "cairotwisted.h"
+using namespace std;
 
 void fancy_cairo_stroke (cairo_t *cr);
 void fancy_cairo_stroke_preserve (cairo_t *cr);
@@ -517,6 +519,13 @@ draw_text (cairo_t *cr,
 	g_object_unref (layout);
 }
 
+inline double ChkDet2D(const Point &p1, const Point &p2, const Point &p3) 
+{
+	return +p1.first*(p2.second-p3.second)
+		+p2.first*(p3.second-p1.second)
+		+p3.first*(p1.second-p2.second);
+}
+
 void calc_twisted_bbox(PangoRectangle &rect,
 	parametrized_path_t &param,
 	double x,
@@ -552,17 +561,48 @@ void calc_twisted_bbox(PangoRectangle &rect,
 		double p2y = y1;
 		point_on_path(&param, &p2x, &p2y);
 
+		Point tri1a(prev1x, prev1y);
+		Point tri1b(p1x, p1y);
+		Point tri1c(prev2x, prev2y);
+
+		double det = ChkDet2D(tri1a, tri1b, tri1c);
 		std::vector<Point> tri1;
-		tri1.push_back(Point(prev1x, prev1y));
-		tri1.push_back(Point(prev2x, prev2y));
-		tri1.push_back(Point(p1x, p1y));
+		if(det < 0.0)
+		{
+			//Reverse order
+			tri1.push_back(tri1a);
+			tri1.push_back(tri1c);
+			tri1.push_back(tri1b);
+		}
+		else
+		{
+			tri1.push_back(tri1a);
+			tri1.push_back(tri1b);
+			tri1.push_back(tri1c);
+		}
 		trianglesOut.push_back(tri1);
 
+		Point tri2a(prev2x, prev2y);
+		Point tri2b(p1x, p1y);
+		Point tri2c(p2x, p2y);
+
+		det = ChkDet2D(tri2a, tri2b, tri2c);
 		std::vector<Point> tri2;
-		tri2.push_back(Point(prev2x, prev2y));
-		tri2.push_back(Point(p1x, p1y));
-		tri2.push_back(Point(p2x, p2y));
+		if(det < 0.0)
+		{
+			//Reverse order
+			tri2.push_back(tri2a);
+			tri2.push_back(tri2c);
+			tri2.push_back(tri2b);
+		}
+		else
+		{
+			tri2.push_back(tri2a);
+			tri2.push_back(tri2b);
+			tri2.push_back(tri2c);
+		}
 		trianglesOut.push_back(tri2);
+
 
 		prev1x = p1x;
 		prev1y = p1y;
