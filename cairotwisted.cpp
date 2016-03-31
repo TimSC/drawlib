@@ -656,8 +656,8 @@ draw_twisted (cairo_t *cr,
 	PangoRectangle ink_rect;
 	PangoRectangle logical_rect;
 	draw_text (cr, x, y, text, desc, properties, &ink_rect, &logical_rect);
-	printf("ink %d %d %d %d\n", ink_rect.x, ink_rect.y, ink_rect.width, ink_rect.height);
-	printf("logical %d %d %d %d\n", logical_rect.x, logical_rect.y, logical_rect.width, logical_rect.height);
+	//printf("ink %d %d %d %d\n", ink_rect.x, ink_rect.y, ink_rect.width, ink_rect.height);
+	//printf("logical %d %d %d %d\n", logical_rect.x, logical_rect.y, logical_rect.width, logical_rect.height);
 
 	parametrized_path_t param;
 	param.path = path;

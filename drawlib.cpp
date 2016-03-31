@@ -178,10 +178,10 @@ void TwistedTextLabel::Translate(double tx, double ty)
 	for(size_t i = 0;i < path.size(); i++)
 	{
 		TwistedCurveCmd &cmd = path[i];
-		TwistedCurveCmdType ty = cmd.first;	
+		TwistedCurveCmdType cmdType = cmd.first;	
 		std::vector<double> &params = cmd.second;
 
-		switch(ty)
+		switch(cmdType)
 		{
 		case MoveTo:
 			for(size_t j=0;j+1 < params.size();j+=2)
