@@ -149,6 +149,12 @@ TextLabel::TextLabel(const TextLabel &arg):
 TextLabel::~TextLabel()
 {}
 
+void TextLabel::Translate(double tx, double ty)
+{
+	this->x += tx;
+	this->y += ty;
+}
+
 // *************************************
 
 TwistedTextLabel::TwistedTextLabel()
@@ -166,6 +172,45 @@ TwistedTextLabel::TwistedTextLabel(const TwistedTextLabel &arg):
 
 TwistedTextLabel::~TwistedTextLabel()
 {}
+
+void TwistedTextLabel::Translate(double tx, double ty)
+{
+	for(size_t i = 0;i < path.size(); i++)
+	{
+		TwistedCurveCmd &cmd = path[i];
+		TwistedCurveCmdType ty = cmd.first;	
+		std::vector<double> &params = cmd.second;
+
+		switch(ty)
+		{
+		case MoveTo:
+			for(size_t j=0;j+1 < params.size();j+=2)
+			{
+				params[j] += tx;
+				params[j+1] += ty;
+			}	
+			break;
+		case LineTo:
+			for(size_t j=0;j+1 < params.size();j+=2)
+			{
+				params[j] += tx;
+				params[j+1] += ty;
+			}	
+			break;
+		case RelLineTo:
+			break;
+		case CurveTo:
+			for(size_t j=0;j+1 < params.size();j+=2)
+			{
+				params[j] += tx;
+				params[j+1] += ty;
+			}	
+			break;
+		case RelCurveTo:
+			break;
+		}
+	}
+}
 
 // *************************************
 

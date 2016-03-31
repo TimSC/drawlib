@@ -100,6 +100,8 @@ public:
 	TextLabel(const char *text, double x, double y, double ang=0.0);
 	TextLabel(const TextLabel &arg);
 	virtual ~TextLabel();
+
+	void Translate(double tx, double ty);
 };
 
 ///Defines a single twisted label that follows a Bezier path
@@ -114,6 +116,8 @@ public:
 	TwistedTextLabel(const char *text, const std::vector<TwistedCurveCmd> &path);
 	TwistedTextLabel(const TwistedTextLabel &arg);
 	virtual ~TwistedTextLabel();
+
+	void Translate(double tx, double ty);
 };
 
 ///Base class of all command classes
