@@ -631,7 +631,9 @@ draw_twisted (cairo_t *cr,
 	bool doDrawing,
 	bool doTriangles,
 	const class TextProperties &properties,
-	TwistedTriangles &trianglesOut)
+	TwistedTriangles &trianglesOut, 
+	double &pathLenOut,
+	double &textLenOut)
 {
 	cairo_path_t *path;
 
@@ -656,12 +658,19 @@ draw_twisted (cairo_t *cr,
 	PangoRectangle ink_rect;
 	PangoRectangle logical_rect;
 	draw_text (cr, x, y, text, desc, properties, &ink_rect, &logical_rect);
-	//printf("ink %d %d %d %d\n", ink_rect.x, ink_rect.y, ink_rect.width, ink_rect.height);
-	//printf("logical %d %d %d %d\n", logical_rect.x, logical_rect.y, logical_rect.width, logical_rect.height);
+	//cout << "ink " <<ink_rect.x<<","<<ink_rect.y<<","<<ink_rect.width<<","<<ink_rect.height<<endl;
+	//cout << "logical " << logical_rect.x<<","<<logical_rect.y<<","<<logical_rect.width<<","<<logical_rect.height<<endl;
+	textLenOut = logical_rect.width;
 
+	//Calculate length of each path section
 	parametrized_path_t param;
 	param.path = path;
 	parametrize_path (path, param.parametrization);
+
+	//Calculate total path length
+	pathLenOut = 0.0;
+	for(size_t i = 0; i < param.parametrization.size(); i++)
+		pathLenOut += param.parametrization[i];
 
 	if(doDrawing)
 		map_path_onto (cr, param);
@@ -725,8 +734,11 @@ void RunTwistedCurveCmds(cairo_t *cr, const std::vector<TwistedCurveCmd> &cmds)
 
 }
 
-void draw_formatted_twisted_text (cairo_t *cr, const std::string &text, const std::vector<TwistedCurveCmd> &cmds,
-	const class TextProperties &properties)
+void draw_formatted_twisted_text (cairo_t *cr, const std::string &text, 
+	const std::vector<TwistedCurveCmd> &cmds,
+	const class TextProperties &properties,
+	double &pathLenOut,
+	double &textLenOut)
 {
 	cairo_save (cr);
 	RunTwistedCurveCmds(cr, cmds);
@@ -745,7 +757,9 @@ void draw_formatted_twisted_text (cairo_t *cr, const std::string &text, const st
 		true,
 		false,
 		properties,
-		triangles);
+		triangles,
+		pathLenOut,
+		textLenOut);
 
 	pango_font_description_free (desc);
 
@@ -753,7 +767,9 @@ void draw_formatted_twisted_text (cairo_t *cr, const std::string &text, const st
 }
 
 void get_bounding_triangles_twisted_text (cairo_t *cr, const std::string &text, const std::vector<TwistedCurveCmd> &cmds,
-	const class TextProperties &properties, TwistedTriangles &trianglesOut)
+	const class TextProperties &properties, TwistedTriangles &trianglesOut,
+	double &pathLenOut,
+	double &textLenOut)
 {
 	trianglesOut.clear();
 	cairo_save (cr);
@@ -769,7 +785,9 @@ void get_bounding_triangles_twisted_text (cairo_t *cr, const std::string &text, 
 		false,
 		true,
 		properties,
-		trianglesOut);
+		trianglesOut,
+		pathLenOut,
+		textLenOut);
 
 	pango_font_description_free (desc);
 

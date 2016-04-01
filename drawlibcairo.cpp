@@ -385,7 +385,9 @@ void DrawLibCairoPango::DrawCmdTwistedText(class DrawTwistedTextCmd &textCmd)
 	for(size_t i=0; i< textCmd.textStrs.size(); i++)
 	{
 		const class TwistedTextLabel &tl = textCmd.textStrs[i];
-		draw_formatted_twisted_text (this->cr, tl.text, tl.path, properties);
+		double pathLen = 0.0;
+		double textLen = 0.0;
+		draw_formatted_twisted_text (this->cr, tl.text, tl.path, properties, pathLen, textLen);
 	}
 }
 
@@ -447,10 +449,13 @@ int DrawLibCairoPango::GetTriangleBoundsText(const TextLabel &label, const class
 
 int DrawLibCairoPango::GetTriangleBoundsTwistedText(const TwistedTextLabel &label, 
 		const class TextProperties &properties, 
-		TwistedTriangles &trianglesOut)
+		TwistedTriangles &trianglesOut,
+		double &pathLenOut, double &textLenOut)
 {
+	double pathLen = 0.0;
+	double textLen = 0.0;
 	get_bounding_triangles_twisted_text (this->cr, label.text, label.path,
-		properties, trianglesOut);
+		properties, trianglesOut, pathLenOut, textLenOut);
 	//cairo_set_source_rgba (this->cr, 0.5, 0.5, 0.5, 0.4);
 	//fancy_cairo_draw_triangles(this->cr, trianglesOut);
 	return 0;

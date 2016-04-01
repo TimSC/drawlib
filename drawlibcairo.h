@@ -45,7 +45,7 @@ public:
 		TwistedTriangles &trianglesOut);
 	int GetTriangleBoundsTwistedText(const TwistedTextLabel &label, 
 		const class TextProperties &properties, 
-		TwistedTriangles &trianglesOut);
+		TwistedTriangles &trianglesOut, double &pathLenOut, double &textLenOut);
 };
 
 #endif //_DRAW_LIB_CAIRO_H

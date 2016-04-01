@@ -337,8 +337,10 @@ int LocalStore::GetTriangleBoundsText(const TextLabel &label, const class TextPr
 
 int LocalStore::GetTriangleBoundsTwistedText(const TwistedTextLabel &label, 
 	const class TextProperties &properties, 
-	TwistedTriangles &trianglesOut)
+	TwistedTriangles &trianglesOut,double &pathLenOut, double &textLenOut)
 {
+	pathLenOut = -1.0;
+	textLenOut = -1.0;
 	trianglesOut.clear();
 	return -1;
 }

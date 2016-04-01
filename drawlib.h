@@ -200,7 +200,7 @@ public:
 		TwistedTriangles &trianglesOut) = 0;
 	virtual int GetTriangleBoundsTwistedText(const TwistedTextLabel &label, 
 		const class TextProperties &properties, 
-		TwistedTriangles &trianglesOut) = 0;
+		TwistedTriangles &trianglesOut, double &pathLenOut, double &textLenOut) = 0;
 
 	virtual int GetDrawableExtents(double &x1,
 		double &y1,
@@ -229,7 +229,8 @@ public:
 		TwistedTriangles &trianglesOut);
 	int GetTriangleBoundsTwistedText(const TwistedTextLabel &label, 
 		const class TextProperties &properties, 
-		TwistedTriangles &trianglesOut);
+		TwistedTriangles &trianglesOut,
+		double &pathLenOut, double &textLenOut);
 };
 
 #endif //_DRAWLIB_H
