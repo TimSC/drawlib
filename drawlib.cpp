@@ -371,7 +371,7 @@ TwistedCurveCmd NewTwistedCurveCmd(TwistedCurveCmdType ty, int n_args, ...)
 	return TwistedCurveCmd(ty, vals);
 }
 
-void SmoothContour(const Contour &line, std::vector<TwistedCurveCmd> &bezierOut)
+void FixBezierToPoints(const Contour &line, std::vector<TwistedCurveCmd> &bezierOut)
 {
 	bezierOut.clear();
 	double cx = 0.0, cy = 0.0;
