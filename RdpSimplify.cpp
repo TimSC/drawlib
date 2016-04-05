@@ -83,30 +83,3 @@ void RamerDouglasPeucker(const Contour &pointList, double epsilon, Contour &out)
 	}
 }
 
-int main()
-{
-	vector<Point> pointList;
-	vector<Point> pointListOut;
-
-	pointList.push_back(Point(0.0, 0.0));
-	pointList.push_back(Point(1.0, 0.1));
-	pointList.push_back(Point(2.0, -0.1));
-	pointList.push_back(Point(3.0, 5.0));
-	pointList.push_back(Point(4.0, 6.0));
-	pointList.push_back(Point(5.0, 7.0));
-	pointList.push_back(Point(6.0, 8.1));
-	pointList.push_back(Point(7.0, 9.0));
-	pointList.push_back(Point(8.0, 9.0));
-	pointList.push_back(Point(9.0, 9.0));
-
-	RamerDouglasPeucker(pointList, 1.0, pointListOut);
-
-	cout << "result" << endl;
-	for(size_t i=0;i< pointListOut.size();i++)
-	{
-		cout << pointListOut[i].first << "," << pointListOut[i].second << endl;
-	}
-
-	return 0;
-}
-
