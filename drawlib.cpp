@@ -6,13 +6,13 @@
 using namespace std;
 
 ShapeProperties::ShapeProperties() 
-{r=1.0; g=1.0; b=1.0; a=1.0;}
+{r=1.0; g=1.0; b=1.0; a=1.0; texx=0.0; texy=0.0;}
 
-ShapeProperties::ShapeProperties(double r, double g, double b): r(r), g(g), b(b), a(1.0) 
+ShapeProperties::ShapeProperties(double r, double g, double b): r(r), g(g), b(b), a(1.0), texx(0.0), texy(0.0)
 {}
 
 ShapeProperties::ShapeProperties(const ShapeProperties &arg) 
-{r=arg.r; g=arg.g; b=arg.b; a=arg.a; imageId=arg.imageId;}
+{r=arg.r; g=arg.g; b=arg.b; a=arg.a; imageId=arg.imageId; texx=arg.texx; texy=arg.texy;}
 
 ShapeProperties::~ShapeProperties() 
 {}
@@ -29,6 +29,10 @@ bool ShapeProperties::operator <(const ShapeProperties& rhs) const
 	if(a > rhs.a) return false;
 	if(imageId < rhs.imageId) return true;
 	if(imageId > rhs.imageId) return false;
+	if(texx < rhs.texx) return true;
+	if(texx > rhs.texx) return false;
+	if(texy < rhs.texy) return true;
+	if(texy > rhs.texy) return false;
 	return false;
 }
 

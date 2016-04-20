@@ -81,6 +81,14 @@ void DrawLibCairo::SetPolySource(const class ShapeProperties &properties)
 			cairo_pattern_t *pattern = cairo_pattern_create_for_surface (it->second);
 			cairo_pattern_set_extend (pattern,
                   CAIRO_EXTEND_REPEAT);
+
+			if(properties.texx != 0.0 || properties.texy != 0.0)
+			{
+				cairo_matrix_t mat;
+				cairo_matrix_init_translate (&mat, properties.texx, properties.texy);
+				cairo_pattern_set_matrix(pattern, &mat);
+			}
+
 			cairo_set_source (cr,
                       pattern);
 			cairo_pattern_destroy (pattern);

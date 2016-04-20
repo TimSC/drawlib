@@ -41,7 +41,8 @@ class ShapeProperties
 {
 public:
 	double r, g, b, a;
-	std::string imageId;
+	std::string imageId; //Texture ID
+	double texx, texy; //Translate texture
 
 	ShapeProperties();
 	ShapeProperties(double r, double g, double b);

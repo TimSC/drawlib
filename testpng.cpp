@@ -154,16 +154,18 @@ void DrawTestPatterns(class IDrawLib *drawLib)
 	//Draw image to canvas
 	class ShapeProperties prop3(1.0, 1.0, 1.0);
 	prop3.imageId = "letterR";
+	prop3.texx=-340.0;
+	prop3.texy=-200.0;
 	Contour outer3;
 	outer3.push_back(Point(340, 200));
 	outer3.push_back(Point(404, 200));
 	outer3.push_back(Point(404, 264));
 	outer3.push_back(Point(340, 264));
 	Contour inner3;
-	inner3.push_back(Point(360, 200));
-	inner3.push_back(Point(384, 200));
-	inner3.push_back(Point(384, 264));
-	inner3.push_back(Point(360, 264));
+	inner3.push_back(Point(360, 220));
+	inner3.push_back(Point(384, 220));
+	inner3.push_back(Point(384, 244));
+	inner3.push_back(Point(360, 244));
 	Contours inners3;
 	inners3.push_back(inner3);
 	Polygon polygon3(outer3, inners3);
