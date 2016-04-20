@@ -12,7 +12,7 @@ ShapeProperties::ShapeProperties(double r, double g, double b): r(r), g(g), b(b)
 {}
 
 ShapeProperties::ShapeProperties(const ShapeProperties &arg) 
-{r=arg.r; g=arg.g; b=arg.b; a=arg.a;}
+{r=arg.r; g=arg.g; b=arg.b; a=arg.a; imageId=arg.imageId;}
 
 ShapeProperties::~ShapeProperties() 
 {}
@@ -27,6 +27,8 @@ bool ShapeProperties::operator <(const ShapeProperties& rhs) const
 	if(b > rhs.b) return false;
 	if(a < rhs.a) return true;
 	if(a > rhs.a) return false;
+	if(imageId < rhs.imageId) return true;
+	if(imageId > rhs.imageId) return false;
 	return false;
 }
 

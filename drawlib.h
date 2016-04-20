@@ -41,6 +41,7 @@ class ShapeProperties
 {
 public:
 	double r, g, b, a;
+	std::string imageId;
 
 	ShapeProperties();
 	ShapeProperties(double r, double g, double b);

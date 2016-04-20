@@ -24,7 +24,6 @@ void DrawTestPatterns(class IDrawLib *drawLib)
 	std::vector<Polygon> polygons;
 	polygons.push_back(polygon);
 	class ShapeProperties prop(1.0, 0.0, 0.0);
-	class DrawPolygonsCmd cmd(polygons, prop);
 	drawLib->AddDrawPolygonsCmd(polygons, prop);
 
 	std::vector<Polygon> polygons2;
@@ -148,13 +147,23 @@ void DrawTestPatterns(class IDrawLib *drawLib)
 
 	//Load image resources
 	std::map<std::string, std::string> loadIdToFilenameMapping;
-	loadIdToFilenameMapping["letterr"] = "data/letterr.png";
+	loadIdToFilenameMapping["letterR"] = "tests/letterr.png";
 	std::vector<std::string> unloadIds;
 	drawLib->AddLoadImageResourcesCmd(loadIdToFilenameMapping, unloadIds);
 
 	//Draw image to canvas
-	
-
+	class ShapeProperties prop3(1.0, 1.0, 1.0);
+	prop3.imageId = "letterR";
+	Contour outer3;
+	outer3.push_back(Point(340, 200));
+	outer3.push_back(Point(404, 200));
+	outer3.push_back(Point(404, 264));
+	outer3.push_back(Point(340, 264));
+	Contours inners3;
+	Polygon polygon3(outer3, inners3);
+	std::vector<Polygon> polygons3;
+	polygons3.push_back(polygon3);
+	drawLib->AddDrawPolygonsCmd(polygons3, prop3);
 
 	drawLib->Draw();
 
