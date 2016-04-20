@@ -19,6 +19,12 @@ DrawLibCairo::~DrawLibCairo()
 	cairo_destroy(this->cr);
 	if(this->maskSurface != NULL)
 		cairo_surface_destroy(maskSurface);
+
+	for(std::map<std::string, cairo_surface_t *>::iterator it = this->imageResources.begin();
+		it != this->imageResources.end();
+		it++)
+		cairo_surface_destroy(it->second);
+	this->imageResources.clear();
 }
 
 void DrawLibCairo::Draw()
@@ -253,7 +259,27 @@ void DrawLibCairo::DrawCmdTwistedText(class DrawTwistedTextCmd &textCmd)
 
 void DrawLibCairo::LoadResources(class LoadImageResourcesCmd &resourcesCmd)
 {
-	cout << "DrawLibCairo::LoadResources" << endl;
+	for(std::map<std::string, std::string>::const_iterator it = resourcesCmd.loadIdToFilenameMapping.begin();
+		it != resourcesCmd.loadIdToFilenameMapping.end();
+		it++)
+	{
+		cairo_surface_t *surf = NULL;
+		#ifdef CAIRO_HAS_PNG_FUNCTIONS
+		surf = cairo_image_surface_create_from_png(it->second.c_str());
+		#endif //CAIRO_HAS_PNG_FUNCTIONS
+		this->imageResources[it->first] = surf;
+	}
+
+	for(size_t i=0; i< resourcesCmd.unloadIds.size(); i++)
+	{
+		const std::string &resId = resourcesCmd.unloadIds[i];
+		std::map<std::string, cairo_surface_t *>::iterator it = this->imageResources.find(resId);
+		if(it != this->imageResources.end())
+		{
+			cairo_surface_destroy(it->second);
+			this->imageResources.erase(it);
+		}
+	}
 }
 
 int DrawLibCairo::GetTriangleBoundsText(const TextLabel &label, const class TextProperties &properties, 

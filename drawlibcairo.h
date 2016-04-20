@@ -11,6 +11,7 @@ protected:
 	cairo_t *cr;
 	cairo_surface_t *surface;
 	cairo_surface_t *maskSurface;
+	std::map<std::string, cairo_surface_t *> imageResources;
 
 	virtual void DrawCmdPolygons(class DrawPolygonsCmd &polygons);
 	virtual void DrawCmdLines(class DrawLinesCmd &linesCmd);

@@ -146,6 +146,16 @@ void DrawTestPatterns(class IDrawLib *drawLib)
 	twistedTextStrs2.push_back(TwistedTextLabel(rooms, pathCmds2));
 	drawLib->AddDrawTwistedTextCmd(twistedTextStrs2, properties3);
 
+	//Load image resources
+	std::map<std::string, std::string> loadIdToFilenameMapping;
+	loadIdToFilenameMapping["letterr"] = "data/letterr.png";
+	std::vector<std::string> unloadIds;
+	drawLib->AddLoadImageResourcesCmd(loadIdToFilenameMapping, unloadIds);
+
+	//Draw image to canvas
+	
+
+
 	drawLib->Draw();
 
 }
