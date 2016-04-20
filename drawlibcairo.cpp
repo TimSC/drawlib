@@ -69,6 +69,27 @@ void DrawLibCairo::CreateMaskSurface(double width, double height)
 	}
 }
 
+void DrawLibCairo::SetPolySource(const class ShapeProperties &properties)
+{
+	if(properties.imageId.size() == 0)
+		cairo_set_source_rgba(cr, properties.r, properties.g, properties.b, properties.a);
+	else
+	{
+		std::map<std::string, cairo_surface_t *>::iterator it = this->imageResources.find(properties.imageId);
+		if(it != this->imageResources.end())
+		{
+			cairo_pattern_t *pattern = cairo_pattern_create_for_surface (it->second);
+			cairo_pattern_set_extend (pattern,
+                  CAIRO_EXTEND_REPEAT);
+			cairo_set_source (cr,
+                      pattern);
+			cairo_pattern_destroy (pattern);
+		}
+		else
+			cairo_set_source_rgba(cr, 1.0, 0.0, 0.0, properties.a);
+	}
+}
+
 void DrawLibCairo::DrawCmdPolygons(class DrawPolygonsCmd &polygonsCmd)
 {
 	cairo_save (this->cr);
@@ -141,30 +162,14 @@ void DrawLibCairo::DrawCmdPolygons(class DrawPolygonsCmd &polygonsCmd)
 			cairo_destroy(maskCr);
 
 			//Fill using mask surface
-			cairo_set_source_rgba(cr, properties.r, properties.g, properties.b, properties.a);
+			this->SetPolySource(properties);
 			cairo_mask_surface(cr, maskSurface, x1, y1);
 			cairo_fill (cr);
 			
 		}
 		else
 		{
-			if(properties.imageId.size() == 0)
-				cairo_set_source_rgba(cr, properties.r, properties.g, properties.b, properties.a);
-			else
-			{
-				std::map<std::string, cairo_surface_t *>::iterator it = this->imageResources.find(properties.imageId);
-				if(it != this->imageResources.end())
-				{
-					cairo_pattern_t *pattern = cairo_pattern_create_for_surface (it->second);
-					cairo_pattern_set_extend (pattern,
-                          CAIRO_EXTEND_REPEAT);
-					cairo_set_source (cr,
-		                      pattern);
-					cairo_pattern_destroy (pattern);
-				}
-				else
-					cairo_set_source_rgba(cr, 1.0, 0.0, 0.0, properties.a);
-			}
+			this->SetPolySource(properties);
 
 			//Draw outer polygon
 			if(outer.size() > 0) {

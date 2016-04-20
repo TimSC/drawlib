@@ -159,7 +159,13 @@ void DrawTestPatterns(class IDrawLib *drawLib)
 	outer3.push_back(Point(404, 200));
 	outer3.push_back(Point(404, 264));
 	outer3.push_back(Point(340, 264));
+	Contour inner3;
+	inner3.push_back(Point(360, 200));
+	inner3.push_back(Point(384, 200));
+	inner3.push_back(Point(384, 264));
+	inner3.push_back(Point(360, 264));
 	Contours inners3;
+	inners3.push_back(inner3);
 	Polygon polygon3(outer3, inners3);
 	std::vector<Polygon> polygons3;
 	polygons3.push_back(polygon3);

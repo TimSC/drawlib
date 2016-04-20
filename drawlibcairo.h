@@ -20,6 +20,7 @@ protected:
 	virtual void LoadResources(class LoadImageResourcesCmd &resourcesCmd);
 
 	void CreateMaskSurface(double width, double height);
+	void SetPolySource(const class ShapeProperties &properties);
 public:
 	DrawLibCairo(cairo_surface_t *surface);
 	virtual ~DrawLibCairo();
