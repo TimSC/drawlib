@@ -4,6 +4,7 @@
 #include <vector>
 #include <utility>
 #include <string>
+#include <map>
 
 typedef std::pair<double, double> Point;
 typedef std::vector<Point> Contour;
@@ -19,6 +20,7 @@ enum CmdTypes
 	CMD_LINES,
 	CMD_TEXT,
 	CMD_TWISTED_TEXT,
+	CMD_LOAD_RESOURCES
 };
 
 enum TwistedCurveCmdType
@@ -183,6 +185,19 @@ public:
 	virtual BaseCmd *Clone();
 };
 
+///Load or unload image resources
+class LoadImageResourcesCmd : public BaseCmd
+{
+public:
+	const std::map<std::string, std::string> loadIdToFilenameMapping;
+	const std::vector<std::string> unloadIds;
+
+	LoadImageResourcesCmd(const std::map<std::string, std::string> &loadIdToFilenameMapping, const std::vector<std::string> &unloadIds);
+	LoadImageResourcesCmd(const LoadImageResourcesCmd &arg);
+	virtual ~LoadImageResourcesCmd();
+	virtual BaseCmd *Clone();
+};
+
 ///Abstract base class of drawing library
 class IDrawLib
 {
@@ -196,6 +211,8 @@ public:
 	virtual void AddDrawLinesCmd(const Contours &lines, const class LineProperties &properties) = 0;
 	virtual void AddDrawTextCmd(const std::vector<class TextLabel> &textStrs, const class TextProperties &properties) = 0;
 	virtual void AddDrawTwistedTextCmd(const std::vector<class TwistedTextLabel> &textStrs, const class TextProperties &properties) = 0;
+	virtual void AddLoadImageResourcesCmd(const std::map<std::string, std::string> &loadIdToFilenameMapping, 
+		const std::vector<std::string> &unloadIds) = 0;
 	virtual int GetTriangleBoundsText(const TextLabel &label, const class TextProperties &properties, 
 		TwistedTriangles &trianglesOut) = 0;
 	virtual int GetTriangleBoundsTwistedText(const TwistedTextLabel &label, 
@@ -225,6 +242,8 @@ public:
 	void AddDrawLinesCmd(const Contours &lines, const class LineProperties &properties);
 	void AddDrawTextCmd(const std::vector<class TextLabel> &textStrs, const class TextProperties &properties);
 	void AddDrawTwistedTextCmd(const std::vector<class TwistedTextLabel> &textStrs, const class TextProperties &properties);
+	void AddLoadImageResourcesCmd(const std::map<std::string, std::string> &loadIdToFilenameMapping, 
+		const std::vector<std::string> &unloadIds);
 	int GetTriangleBoundsText(const TextLabel &label, const class TextProperties &properties, 
 		TwistedTriangles &trianglesOut);
 	int GetTriangleBoundsTwistedText(const TwistedTextLabel &label, 

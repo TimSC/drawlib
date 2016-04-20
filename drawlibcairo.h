@@ -16,6 +16,7 @@ protected:
 	virtual void DrawCmdLines(class DrawLinesCmd &linesCmd);
 	virtual void DrawCmdText(class DrawTextCmd &textCmd);
 	virtual void DrawCmdTwistedText(class DrawTwistedTextCmd &textCmd);
+	virtual void LoadResources(class LoadImageResourcesCmd &resourcesCmd);
 
 	void CreateMaskSurface(double width, double height);
 public:

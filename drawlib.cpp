@@ -279,6 +279,21 @@ DrawTwistedTextCmd::~DrawTwistedTextCmd()
 BaseCmd *DrawTwistedTextCmd::Clone()
 {return new class DrawTwistedTextCmd(*this);}
 
+LoadImageResourcesCmd::LoadImageResourcesCmd(const std::map<std::string, std::string> &loadIdToFilenameMapping, 
+	const std::vector<std::string> &unloadIds):
+	BaseCmd(CMD_LOAD_RESOURCES), loadIdToFilenameMapping(loadIdToFilenameMapping), unloadIds(unloadIds)
+{}
+
+LoadImageResourcesCmd::LoadImageResourcesCmd(const LoadImageResourcesCmd &arg):
+	BaseCmd(CMD_LOAD_RESOURCES), loadIdToFilenameMapping(arg.loadIdToFilenameMapping), unloadIds(arg.unloadIds)
+{}
+
+LoadImageResourcesCmd::~LoadImageResourcesCmd()
+{}
+
+BaseCmd *LoadImageResourcesCmd::Clone()
+{return new class LoadImageResourcesCmd(*this);}
+
 // *************************************
 
 LocalStore::LocalStore() : IDrawLib()
@@ -325,6 +340,13 @@ void LocalStore::AddDrawTextCmd(const std::vector<class TextLabel> &textStrs, co
 void LocalStore::AddDrawTwistedTextCmd(const std::vector<class TwistedTextLabel> &textStrs, const class TextProperties &properties)
 {
 	class DrawTwistedTextCmd cmd(textStrs, properties);
+	this->AddCmd(&cmd);
+}
+
+void LocalStore::AddLoadImageResourcesCmd(const std::map<std::string, std::string> &loadIdToFilenameMapping, 
+	const std::vector<std::string> &unloadIds)
+{
+	class LoadImageResourcesCmd cmd(loadIdToFilenameMapping, unloadIds);
 	this->AddCmd(&cmd);
 }
 

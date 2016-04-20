@@ -28,16 +28,19 @@ void DrawLibCairo::Draw()
 		switch(baseCmd->type)
 		{
 		case CMD_POLYGONS:
-			DrawCmdPolygons(*(class DrawPolygonsCmd *)baseCmd);
+			this->DrawCmdPolygons(*(class DrawPolygonsCmd *)baseCmd);
 			break;
 		case CMD_LINES:
-			DrawCmdLines(*(class DrawLinesCmd *)baseCmd);
+			this->DrawCmdLines(*(class DrawLinesCmd *)baseCmd);
 			break;
 		case CMD_TEXT:
-			DrawCmdText(*(class DrawTextCmd *)baseCmd);
+			this->DrawCmdText(*(class DrawTextCmd *)baseCmd);
 			break;
 		case CMD_TWISTED_TEXT:
-			DrawCmdTwistedText(*(class DrawTwistedTextCmd *)baseCmd);
+			this->DrawCmdTwistedText(*(class DrawTwistedTextCmd *)baseCmd);
+			break;
+		case CMD_LOAD_RESOURCES:
+			this->LoadResources(*(class LoadImageResourcesCmd *)baseCmd);
 			break;
 		}
 
@@ -246,6 +249,11 @@ void DrawLibCairo::DrawCmdText(class DrawTextCmd &textCmd)
 void DrawLibCairo::DrawCmdTwistedText(class DrawTwistedTextCmd &textCmd)
 {
 	throw std::runtime_error("Not implemented");
+}
+
+void DrawLibCairo::LoadResources(class LoadImageResourcesCmd &resourcesCmd)
+{
+	cout << "DrawLibCairo::LoadResources" << endl;
 }
 
 int DrawLibCairo::GetTriangleBoundsText(const TextLabel &label, const class TextProperties &properties, 

@@ -114,9 +114,10 @@ void DrawTestPatterns(class IDrawLib *drawLib)
 	drawLib->AddDrawTwistedTextCmd(twistedTextStrs, properties2);
 
 	//Test triangles for twisted text
+	double pathLen = -1.0, textLen = -1.0;
 	drawLib->GetTriangleBoundsTwistedText(TwistedTextLabel(arabic, pathCmds),
 		properties2, 
-		triangles);
+		triangles, pathLen, textLen);
 
 	Contour line3;
 	line3.push_back(Point(320.0, 150.0));
@@ -137,7 +138,7 @@ void DrawTestPatterns(class IDrawLib *drawLib)
 	//Test fitting Bezier to set of points
 	const char *rooms = "All the rooms renumbered. All the rooms renumbered.";
 	std::vector<TwistedCurveCmd> pathCmds2;
-	SmoothContour(line3, pathCmds2);
+	FixBezierToPoints(line3, pathCmds2);
 	class TextProperties properties3;
 	properties3.fontSize = 15.0;
 	properties3.valign = 0.8;
