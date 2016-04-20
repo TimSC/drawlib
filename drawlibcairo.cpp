@@ -148,7 +148,23 @@ void DrawLibCairo::DrawCmdPolygons(class DrawPolygonsCmd &polygonsCmd)
 		}
 		else
 		{
-			cairo_set_source_rgba(cr, properties.r, properties.g, properties.b, properties.a);
+			if(properties.imageId.size() == 0)
+				cairo_set_source_rgba(cr, properties.r, properties.g, properties.b, properties.a);
+			else
+			{
+				std::map<std::string, cairo_surface_t *>::iterator it = this->imageResources.find(properties.imageId);
+				if(it != this->imageResources.end())
+				{
+					cairo_pattern_t *pattern = cairo_pattern_create_for_surface (it->second);
+					cairo_pattern_set_extend (pattern,
+                          CAIRO_EXTEND_REPEAT);
+					cairo_set_source (cr,
+		                      pattern);
+					cairo_pattern_destroy (pattern);
+				}
+				else
+					cairo_set_source_rgba(cr, 1.0, 0.0, 0.0, properties.a);
+			}
 
 			//Draw outer polygon
 			if(outer.size() > 0) {
