@@ -146,7 +146,7 @@ void DrawTestPatterns(class IDrawLib *drawLib)
 	drawLib->AddDrawTwistedTextCmd(twistedTextStrs2, properties3);
 
 	//Check resource dimensions
-	unsigned resWidth, resHeight;
+	unsigned resWidth=0, resHeight=0;
 	int resSizeRet = drawLib->GetResourceDimensionsFromFilename("tests/letterr.png", resWidth, resHeight);
 	cout << "Check resource size:" << resSizeRet << "," << resWidth << "," << resHeight << endl;
 
