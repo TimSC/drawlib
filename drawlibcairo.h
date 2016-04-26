@@ -18,6 +18,7 @@ protected:
 	virtual void DrawCmdText(class DrawTextCmd &textCmd);
 	virtual void DrawCmdTwistedText(class DrawTwistedTextCmd &textCmd);
 	virtual void LoadResources(class LoadImageResourcesCmd &resourcesCmd);
+	virtual void UnloadResources(class UnloadImageResourcesCmd &resourcesCmd);
 
 	void CreateMaskSurface(double width, double height);
 	void SetPolySource(const class ShapeProperties &properties);
@@ -32,6 +33,7 @@ public:
 		double &y1,
 		double &x2,
 		double &y2);
+	int GetResourceDimensionsFromFilename(const std::string &filename, unsigned &widthOut, unsigned &heightOut);
 };
 
 class DrawLibCairoPango : public DrawLibCairo

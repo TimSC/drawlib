@@ -20,7 +20,8 @@ enum CmdTypes
 	CMD_LINES,
 	CMD_TEXT,
 	CMD_TWISTED_TEXT,
-	CMD_LOAD_RESOURCES
+	CMD_LOAD_RESOURCES,
+	CMD_UNLOAD_RESOURCES
 };
 
 enum TwistedCurveCmdType
@@ -187,16 +188,27 @@ public:
 	virtual BaseCmd *Clone();
 };
 
-///Load or unload image resources
+///Load image resources
 class LoadImageResourcesCmd : public BaseCmd
 {
 public:
 	const std::map<std::string, std::string> loadIdToFilenameMapping;
-	const std::vector<std::string> unloadIds;
 
-	LoadImageResourcesCmd(const std::map<std::string, std::string> &loadIdToFilenameMapping, const std::vector<std::string> &unloadIds);
+	LoadImageResourcesCmd(const std::map<std::string, std::string> &loadIdToFilenameMapping);
 	LoadImageResourcesCmd(const LoadImageResourcesCmd &arg);
 	virtual ~LoadImageResourcesCmd();
+	virtual BaseCmd *Clone();
+};
+
+///Unload image resources
+class UnloadImageResourcesCmd : public BaseCmd
+{
+public:
+	const std::vector<std::string> unloadIds;
+
+	UnloadImageResourcesCmd(const std::vector<std::string> &unloadIds);
+	UnloadImageResourcesCmd(const UnloadImageResourcesCmd &arg);
+	virtual ~UnloadImageResourcesCmd();
 	virtual BaseCmd *Clone();
 };
 
@@ -213,13 +225,14 @@ public:
 	virtual void AddDrawLinesCmd(const Contours &lines, const class LineProperties &properties) = 0;
 	virtual void AddDrawTextCmd(const std::vector<class TextLabel> &textStrs, const class TextProperties &properties) = 0;
 	virtual void AddDrawTwistedTextCmd(const std::vector<class TwistedTextLabel> &textStrs, const class TextProperties &properties) = 0;
-	virtual void AddLoadImageResourcesCmd(const std::map<std::string, std::string> &loadIdToFilenameMapping, 
-		const std::vector<std::string> &unloadIds) = 0;
+	virtual void AddLoadImageResourcesCmd(const std::map<std::string, std::string> &loadIdToFilenameMapping) = 0;
+	virtual void AddUnloadImageResourcesCmd(const std::vector<std::string> &unloadIds) = 0;
 	virtual int GetTriangleBoundsText(const TextLabel &label, const class TextProperties &properties, 
 		TwistedTriangles &trianglesOut) = 0;
 	virtual int GetTriangleBoundsTwistedText(const TwistedTextLabel &label, 
 		const class TextProperties &properties, 
 		TwistedTriangles &trianglesOut, double &pathLenOut, double &textLenOut) = 0;
+	virtual int GetResourceDimensionsFromFilename(const std::string &filename, unsigned &widthOut, unsigned &heightOut) = 0;
 
 	virtual int GetDrawableExtents(double &x1,
 		double &y1,
@@ -244,14 +257,15 @@ public:
 	void AddDrawLinesCmd(const Contours &lines, const class LineProperties &properties);
 	void AddDrawTextCmd(const std::vector<class TextLabel> &textStrs, const class TextProperties &properties);
 	void AddDrawTwistedTextCmd(const std::vector<class TwistedTextLabel> &textStrs, const class TextProperties &properties);
-	void AddLoadImageResourcesCmd(const std::map<std::string, std::string> &loadIdToFilenameMapping, 
-		const std::vector<std::string> &unloadIds);
+	void AddLoadImageResourcesCmd(const std::map<std::string, std::string> &loadIdToFilenameMapping);
+	void AddUnloadImageResourcesCmd(const std::vector<std::string> &unloadIds);
 	int GetTriangleBoundsText(const TextLabel &label, const class TextProperties &properties, 
 		TwistedTriangles &trianglesOut);
 	int GetTriangleBoundsTwistedText(const TwistedTextLabel &label, 
 		const class TextProperties &properties, 
 		TwistedTriangles &trianglesOut,
 		double &pathLenOut, double &textLenOut);
+	int GetResourceDimensionsFromFilename(const std::string &filename, unsigned &widthOut, unsigned &heightOut);
 };
 
 #endif //_DRAWLIB_H

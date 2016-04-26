@@ -285,13 +285,12 @@ DrawTwistedTextCmd::~DrawTwistedTextCmd()
 BaseCmd *DrawTwistedTextCmd::Clone()
 {return new class DrawTwistedTextCmd(*this);}
 
-LoadImageResourcesCmd::LoadImageResourcesCmd(const std::map<std::string, std::string> &loadIdToFilenameMapping, 
-	const std::vector<std::string> &unloadIds):
-	BaseCmd(CMD_LOAD_RESOURCES), loadIdToFilenameMapping(loadIdToFilenameMapping), unloadIds(unloadIds)
+LoadImageResourcesCmd::LoadImageResourcesCmd(const std::map<std::string, std::string> &loadIdToFilenameMapping):
+	BaseCmd(CMD_LOAD_RESOURCES), loadIdToFilenameMapping(loadIdToFilenameMapping)
 {}
 
 LoadImageResourcesCmd::LoadImageResourcesCmd(const LoadImageResourcesCmd &arg):
-	BaseCmd(CMD_LOAD_RESOURCES), loadIdToFilenameMapping(arg.loadIdToFilenameMapping), unloadIds(arg.unloadIds)
+	BaseCmd(CMD_LOAD_RESOURCES), loadIdToFilenameMapping(arg.loadIdToFilenameMapping)
 {}
 
 LoadImageResourcesCmd::~LoadImageResourcesCmd()
@@ -299,6 +298,20 @@ LoadImageResourcesCmd::~LoadImageResourcesCmd()
 
 BaseCmd *LoadImageResourcesCmd::Clone()
 {return new class LoadImageResourcesCmd(*this);}
+
+UnloadImageResourcesCmd::UnloadImageResourcesCmd(const std::vector<std::string> &unloadIds):
+	BaseCmd(CMD_UNLOAD_RESOURCES), unloadIds(unloadIds)
+{}
+
+UnloadImageResourcesCmd::UnloadImageResourcesCmd(const UnloadImageResourcesCmd &arg):
+	BaseCmd(CMD_UNLOAD_RESOURCES), unloadIds(arg.unloadIds)
+{}
+
+UnloadImageResourcesCmd::~UnloadImageResourcesCmd()
+{}
+
+BaseCmd *UnloadImageResourcesCmd::Clone()
+{return new class UnloadImageResourcesCmd(*this);}
 
 // *************************************
 
@@ -349,10 +362,15 @@ void LocalStore::AddDrawTwistedTextCmd(const std::vector<class TwistedTextLabel>
 	this->AddCmd(&cmd);
 }
 
-void LocalStore::AddLoadImageResourcesCmd(const std::map<std::string, std::string> &loadIdToFilenameMapping, 
-	const std::vector<std::string> &unloadIds)
+void LocalStore::AddLoadImageResourcesCmd(const std::map<std::string, std::string> &loadIdToFilenameMapping)
 {
-	class LoadImageResourcesCmd cmd(loadIdToFilenameMapping, unloadIds);
+	class LoadImageResourcesCmd cmd(loadIdToFilenameMapping);
+	this->AddCmd(&cmd);
+}
+
+void LocalStore::AddUnloadImageResourcesCmd(const std::vector<std::string> &unloadIds)
+{
+	class UnloadImageResourcesCmd cmd(unloadIds);
 	this->AddCmd(&cmd);
 }
 
@@ -370,6 +388,13 @@ int LocalStore::GetTriangleBoundsTwistedText(const TwistedTextLabel &label,
 	pathLenOut = -1.0;
 	textLenOut = -1.0;
 	trianglesOut.clear();
+	return -1;
+}
+
+int LocalStore::GetResourceDimensionsFromFilename(const std::string &filename, unsigned &widthOut, unsigned &heightOut)
+{
+	widthOut = 0;
+	heightOut = 0;
 	return -1;
 }
 

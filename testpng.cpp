@@ -145,11 +145,15 @@ void DrawTestPatterns(class IDrawLib *drawLib)
 	twistedTextStrs2.push_back(TwistedTextLabel(rooms, pathCmds2));
 	drawLib->AddDrawTwistedTextCmd(twistedTextStrs2, properties3);
 
+	//Check resource dimensions
+	unsigned resWidth, resHeight;
+	int resSizeRet = drawLib->GetResourceDimensionsFromFilename("tests/letterr.png", resWidth, resHeight);
+	cout << "Check resource size:" << resSizeRet << "," << resWidth << "," << resHeight << endl;
+
 	//Load image resources
 	std::map<std::string, std::string> loadIdToFilenameMapping;
 	loadIdToFilenameMapping["letterR"] = "tests/letterr.png";
-	std::vector<std::string> unloadIds;
-	drawLib->AddLoadImageResourcesCmd(loadIdToFilenameMapping, unloadIds);
+	drawLib->AddLoadImageResourcesCmd(loadIdToFilenameMapping);
 
 	//Draw image to canvas
 	class ShapeProperties prop3(1.0, 1.0, 1.0);

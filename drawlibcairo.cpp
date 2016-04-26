@@ -48,6 +48,9 @@ void DrawLibCairo::Draw()
 		case CMD_LOAD_RESOURCES:
 			this->LoadResources(*(class LoadImageResourcesCmd *)baseCmd);
 			break;
+		case CMD_UNLOAD_RESOURCES:
+			this->UnloadResources(*(class UnloadImageResourcesCmd *)baseCmd);
+			break;
 		}
 
 	}
@@ -298,7 +301,10 @@ void DrawLibCairo::LoadResources(class LoadImageResourcesCmd &resourcesCmd)
 		#endif //CAIRO_HAS_PNG_FUNCTIONS
 		this->imageResources[it->first] = surf;
 	}
+}
 
+void DrawLibCairo::UnloadResources(class UnloadImageResourcesCmd &resourcesCmd)
+{
 	for(size_t i=0; i< resourcesCmd.unloadIds.size(); i++)
 	{
 		const std::string &resId = resourcesCmd.unloadIds[i];
@@ -352,6 +358,23 @@ int DrawLibCairo::GetDrawableExtents(double &x1,
 	return 0; //Zero means ok, non-zero is not ok
 }
 
+int DrawLibCairo::GetResourceDimensionsFromFilename(const std::string &filename, unsigned &widthOut, unsigned &heightOut)
+{
+	int ret = -1;
+	cairo_surface_t *surf = NULL;
+	#ifdef CAIRO_HAS_PNG_FUNCTIONS
+	surf = cairo_image_surface_create_from_png(filename.c_str());
+	#endif //CAIRO_HAS_PNG_FUNCTIONS
+	if(surf!=NULL)
+	{
+		widthOut = cairo_image_surface_get_width(surf);
+		heightOut = cairo_image_surface_get_height(surf);
+		cairo_surface_destroy(surf);
+		ret = 0;
+	}	
+	return ret;
+}
+
 // *****************************************************
 
 DrawLibCairoPango::DrawLibCairoPango(cairo_surface_t *surface) : DrawLibCairo(surface)
@@ -388,7 +411,6 @@ void DrawLibCairoPango::DrawCmdText(class DrawTextCmd &textCmd)
 
 		if(properties.outline)
 		{
-
 			cairo_save (this->cr);
 
 			cairo_translate (this->cr,
