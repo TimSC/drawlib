@@ -79,7 +79,7 @@ void DrawLibCairo::SetPolySource(const class ShapeProperties &properties)
 	else
 	{
 		std::map<std::string, cairo_surface_t *>::iterator it = this->imageResources.find(properties.imageId);
-		if(it != this->imageResources.end())
+		if(it != this->imageResources.end() && cairo_surface_status(it->second)==CAIRO_STATUS_SUCCESS)
 		{
 			cairo_pattern_t *pattern = cairo_pattern_create_for_surface (it->second);
 			cairo_pattern_set_extend (pattern,
