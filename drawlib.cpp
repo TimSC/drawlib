@@ -79,14 +79,14 @@ bool LineProperties::operator <(const LineProperties& rhs) const
 
 TextProperties::TextProperties()
 {
-	fr=1.0; fg=1.0; fb=1.0; fa=1.0; lr=1.0; lg=1.0; lb=1.0; la=1.0; 
-	fontSize=10.0; font="Sans"; outline = false; fill=true; lineWidth = 1.0;
+	lr=1.0; lg=1.0; lb=1.0; la=1.0; fr=1.0; fg=1.0; fb=1.0; fa=1.0;
+	font="Sans"; fontSize=10.0; outline = false; fill=true; lineWidth = 1.0;
 	valign = 0.0; halign = 0.0;
 }
 
-TextProperties::TextProperties(double r, double g, double b): fr(r), fg(g), fb(b), fa(1.0),
-	lr(r), lg(g), lb(b), la(1.0),
-	fontSize(10.0), font("Sans"), outline(false), fill(true), lineWidth(1.0),
+TextProperties::TextProperties(double r, double g, double b): lr(r), lg(g), lb(b), la(1.0),
+	fr(r), fg(g), fb(b), fa(1.0),
+	font("Sans"), fontSize(10.0), outline(false), fill(true), lineWidth(1.0),
 	valign(0.0), halign(0.0)
 {}
 
@@ -149,7 +149,7 @@ TextLabel::TextLabel(const char *text, double x, double y, double ang): text(tex
 {}
 
 TextLabel::TextLabel(const TextLabel &arg):
-	x(arg.x), y(arg.y), text(arg.text), ang(arg.ang)
+	text(arg.text), x(arg.x), y(arg.y), ang(arg.ang)
 {}
 
 TextLabel::~TextLabel()

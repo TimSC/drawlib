@@ -235,7 +235,6 @@ void parametrize_path (cairo_path_t *path, std::vector<parametrization_t> &param
 {
 	int i;
 	cairo_path_data_t *data, last_move_to, current_point;
-	parametrization_t *parametrization;
 
 	parametrizationOut.resize(path->num_data);
 

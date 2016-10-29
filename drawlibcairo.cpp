@@ -51,6 +51,8 @@ void DrawLibCairo::Draw()
 		case CMD_UNLOAD_RESOURCES:
 			this->UnloadResources(*(class UnloadImageResourcesCmd *)baseCmd);
 			break;
+		case CMD_BASE: //Should be unused
+			break; 
 		}
 
 	}
@@ -537,8 +539,6 @@ int DrawLibCairoPango::GetTriangleBoundsTwistedText(const TwistedTextLabel &labe
 		TwistedTriangles &trianglesOut,
 		double &pathLenOut, double &textLenOut)
 {
-	double pathLen = 0.0;
-	double textLen = 0.0;
 	get_bounding_triangles_twisted_text (this->cr, label.text, label.path,
 		properties, trianglesOut, pathLenOut, textLenOut);
 	//cairo_set_source_rgba (this->cr, 0.5, 0.5, 0.5, 0.4);
